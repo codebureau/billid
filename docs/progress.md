@@ -32,9 +32,58 @@ None — Phase 0 is scaffolding only. No business logic exists yet to test.
 
 ---
 
-## Phase 1 — Core domain models
+## Phase 1 — Core domain models (complete)
 
-_To be completed._
+### What was built
+
+**Models** (`WorkTracking.Core/Models/`)
+
+| Model | Key fields |
+|---|---|
+| `Client` | Name, contact, billing rate, cap, frequency, dates |
+| `WorkCategory` | Name, description |
+| `ClientWorkCategory` | Join entity (ClientId, WorkCategoryId) |
+| `WorkEntry` | Date, hours, description, category, notes, invoiced flag |
+| `Invoice` | Invoice number, date, total, PDF path |
+| `InvoiceLine` | Hours, rate, amount, category reference |
+| `Attachment` | File path, filename, MIME type |
+| `Setting` | Key/value |
+
+**Enums** (`WorkTracking.Core/Enums/`)
+
+| Enum | Values |
+|---|---|
+| `InvoiceCapStatus` | `NoCap`, `UnderCap`, `AtCap`, `OverCap` |
+| `InvoiceFrequencyStatus` | `NoFrequency`, `OnTrack`, `Due`, `Overdue` |
+
+**DTOs** (`WorkTracking.Core/DTOs/`)
+
+| DTO | Purpose |
+|---|---|
+| `InvoicePrepSummary` | Computed summary for invoice prep dialog (total hours, amount, cap status, category breakdown) |
+| `InvoicePrepCategoryLine` | Per-category line within an `InvoicePrepSummary` |
+
+**Business logic** (`WorkTracking.Core/Services/`)
+
+| Class | Responsibility |
+|---|---|
+| `InvoiceCapCalculator` | Calculates cap status and total billable amount from work entries |
+| `InvoiceFrequencyCalculator` | Calculates next invoice due date and frequency status |
+
+### Tests added
+
+| Class | Tests | Coverage |
+|---|---|---|
+| `InvoiceCapCalculatorTests` | 7 | Null cap, zero cap, under/at/over cap, total amount calculation, empty entries |
+| `InvoiceFrequencyCalculatorTests` | 8 | Null inputs, zero frequency, valid date calculation, on-track/due/overdue status |
+
+**Total: 15 tests — all passing.**
+
+### Decisions made
+
+- Used `decimal` for `Hours`, `HourlyRate`, `TotalAmount`, `InvoiceCapAmount` — avoids floating-point precision issues for financial values.
+- `InvoiceCapBehavior` stored as `string?` on the model to match the SQLite schema (`'warn'`, `'block'`, `'allow'`); a typed enum can be added in a later phase.
+- Business logic lives in static calculator classes in `WorkTracking.Core.Services` — keeps models as pure POCOs and makes logic trivially testable without mocking.
 
 ---
 

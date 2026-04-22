@@ -28,11 +28,11 @@ Or open `src\WorkTracking.slnx` directly from Visual Studio.
 
 ---
 
-## Current phase: Phase 0 — Scaffold
+## Current phase: Phase 1 — Core domain models
 
 ### What is runnable
 
-The WPF application shell (`WorkTracking.UI`) can be launched. It shows the default WPF template window — no application logic is present yet.
+The WPF application shell (`WorkTracking.UI`) can be launched. It shows the default WPF template window — no application logic is wired up yet. All domain models and core business logic are in place but not yet visible in the UI.
 
 ### How to run the application
 
@@ -64,11 +64,11 @@ Or from Visual Studio: open **Test Explorer** and click **Run All**.
 
 ### Current test results
 
-| Project | Tests | Status |
+| Test class | Tests | Status |
 |---|---|---|
-| WorkTracking.Tests | 0 | n/a — no tests yet |
-
-Tests will be added from Phase 1 onwards. The test project is configured with xUnit, Moq, and FluentAssertions and is included in the solution.
+| `InvoiceCapCalculatorTests` | 7 | ✅ Passing |
+| `InvoiceFrequencyCalculatorTests` | 8 | ✅ Passing |
+| **Total** | **15** | **✅ All passing** |
 
 ---
 
@@ -83,8 +83,9 @@ Expected output: `Build succeeded` with no errors or warnings.
 
 ---
 
-## Upcoming (Phase 1)
+## Upcoming (Phase 2)
 
-After Phase 1 completes this file will be updated to include:
-- How to see the domain models
-- Any unit tests covering business logic (cap calculations, etc.)
+After Phase 2 completes this file will be updated to include:
+- How to run repository integration tests against a real (temp) SQLite database
+- Schema initializer verification
+- Date conversion round-trip tests
