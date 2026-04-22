@@ -2,5 +2,15 @@
   <Project Path="../tests/WorkTracking.Tests/WorkTracking.Tests.csproj" />
   <Project Path="WorkTracking.Core/WorkTracking.Core.csproj" />
   <Project Path="WorkTracking.Data/WorkTracking.Data.csproj" />
-  <Project Path="WorkTracking.UI/WorkTracking.UI.csproj" />
+  <Project Path="WorkTracking.UI/WorkTracking.UI.csproj">
+    <Configurations>
+      <Configuration Solution="Debug|Any CPU" Project="Debug|Any CPU" />
+      <Configuration Solution="Release|Any CPU" Project="Release|Any CPU" />
+    </Configurations>
+  </Project>
+  <Properties>
+    <StartupProjects>
+      <StartupProject Path="WorkTracking.UI/WorkTracking.UI.csproj" />
+    </StartupProjects>
+  </Properties>
 </Solution>
