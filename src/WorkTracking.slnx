@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../tests/WorkTracking.Tests/WorkTracking.Tests.csproj" />
+  <Project Path="WorkTracking.Core/WorkTracking.Core.csproj" />
+  <Project Path="WorkTracking.Data/WorkTracking.Data.csproj" />
+  <Project Path="WorkTracking.UI/WorkTracking.UI.csproj" />
+</Solution>
