@@ -88,6 +88,46 @@ docs/
 
 ---
 
+## Database schema versioning
+
+All DDL changes must be **additive and backwards-compatible**. The schema must never be destructively altered in place.
+
+### Rules
+
+- **Never** use `DROP TABLE`, `DROP COLUMN`, or `ALTER TABLE … RENAME TO` as part of a migration without a new version guard.
+- **Never** modify `schema.sql` to change an existing table definition — `schema.sql` defines the baseline (v1) schema only.
+- All schema changes after the initial schema are applied as **numbered migrations**, executed in order at startup by `SchemaInitializer`.
+- Migrations live in `WorkTracking.Data/Migrations/` as embedded SQL files named `migration_{version:D4}_{description}.sql` (e.g. `migration_0002_add_client_notes.sql`).
+- The current schema version is tracked in the `setting` table under the key `schema_version`.
+- `SchemaInitializer` reads the current version, then applies all unapplied migrations in order.
+
+### Safe DDL patterns
+
+| Operation | Safe approach |
+|---|---|
+| Add a column | `ALTER TABLE t ADD COLUMN col TYPE` (SQLite supports this; always add with a default or as nullable) |
+| Add a table | `CREATE TABLE IF NOT EXISTS` |
+| Add an index | `CREATE INDEX IF NOT EXISTS` |
+| Remove a column | Add a new table, migrate data, rename — never drop directly |
+| Rename a column | Add new column, copy data, deprecate old (do not rename — SQLite support is limited) |
+| Change a column type | New column + data migration |
+
+### Migration file structure
+
+```sql
+-- migration_0002_add_client_notes.sql
+-- Applied: adds notes column to client table
+
+ALTER TABLE client ADD COLUMN notes TEXT;
+```
+
+### Testing migrations
+
+- Each migration must have an integration test in `WorkTracking.Tests/Data/Migrations/` verifying it applies cleanly to the previous schema version.
+- The idempotency test in `SchemaInitializerTests` must remain passing after any migration is added.
+
+---
+
 ## Dependency injection
 
 - All registrations live in `WorkTracking.UI/DependencyInjection/ServiceCollectionExtensions.cs`

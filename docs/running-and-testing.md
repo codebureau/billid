@@ -28,11 +28,13 @@ Or open `src\WorkTracking.slnx` directly from Visual Studio.
 
 ---
 
-## Current phase: Phase 1 — Core domain models
+## Current phase: Phase 2 — Data layer
 
 ### What is runnable
 
-The WPF application shell (`WorkTracking.UI`) can be launched. It shows the default WPF template window — no application logic is wired up yet. All domain models and core business logic are in place but not yet visible in the UI.
+The WPF application shell (`WorkTracking.UI`) can be launched. It shows the default WPF template window — no application logic is wired up in the UI yet.
+
+The full data layer is now in place: the SQLite database is created automatically at `%APPDATA%\Billable\billable.db` when the app starts (schema initializer runs on startup — this will be wired up in Phase 3).
 
 ### How to run the application
 
@@ -68,7 +70,14 @@ Or from Visual Studio: open **Test Explorer** and click **Run All**.
 |---|---|---|
 | `InvoiceCapCalculatorTests` | 7 | ✅ Passing |
 | `InvoiceFrequencyCalculatorTests` | 8 | ✅ Passing |
-| **Total** | **15** | **✅ All passing** |
+| `SchemaInitializerTests` | 2 | ✅ Passing |
+| `DateConversionTests` | 8 | ✅ Passing |
+| `ClientRepositoryTests` | 7 | ✅ Passing |
+| `WorkEntryRepositoryTests` | 6 | ✅ Passing |
+| `WorkCategoryRepositoryTests` | 5 | ✅ Passing |
+| `InvoiceRepositoryTests` | 5 | ✅ Passing |
+| `SettingRepositoryTests` | 5 | ✅ Passing |
+| **Total** | **54** | **✅ All passing** |
 
 ---
 
@@ -83,9 +92,9 @@ Expected output: `Build succeeded` with no errors or warnings.
 
 ---
 
-## Upcoming (Phase 2)
+## Upcoming (Phase 3)
 
-After Phase 2 completes this file will be updated to include:
-- How to run repository integration tests against a real (temp) SQLite database
-- Schema initializer verification
-- Date conversion round-trip tests
+After Phase 3 completes this file will be updated to include:
+- How to launch the app with a real client list visible
+- How to navigate between clients
+- ViewModel unit tests for `ClientListViewModel` and `ClientDetailViewModel`

@@ -87,9 +87,60 @@ None — Phase 0 is scaffolding only. No business logic exists yet to test.
 
 ---
 
-## Phase 2 — Data layer
+## Phase 2 — Data layer (complete)
 
-_To be completed._
+### What was built
+
+**Infrastructure** (`WorkTracking.Data/Database/`)
+
+| Component | Detail |
+|---|---|
+| `IDatabaseConnectionFactory` | Interface for creating `SqliteConnection` instances |
+| `DatabaseConnectionFactory` | Resolves DB path from `%APPDATA%\Billable\billable.db` |
+| `SchemaInitializer` | Applies baseline schema + numbered migrations at startup; idempotent; migration version tracked in `setting` table |
+
+**Helpers** (`WorkTracking.Data/Helpers/`)
+
+| Component | Detail |
+|---|---|
+| `DateConversion` | `DateOnly` ↔ ISO-8601 `TEXT`, `DateTime` ↔ ISO-8601 `TEXT`, nullable variants |
+
+**Repositories** (interface + implementation pairs)
+
+| Repository | Key extras beyond basic CRUD |
+|---|---|
+| `ClientRepository` | `GetAllAsync` ordered by name |
+| `WorkEntryRepository` | `GetFilteredAsync` (date range, invoiced flag, category); `MarkInvoicedAsync` (bulk) |
+| `WorkCategoryRepository` | `GetByClientAsync`; `EnableForClientAsync`; `DisableForClientAsync` |
+| `InvoiceRepository` | `AddWithLinesAsync` (transactional); `GetLinesAsync` |
+| `AttachmentRepository` | `GetByWorkEntryAsync` |
+| `SettingRepository` | `GetAsync` / `SetAsync` (upsert) / `GetAllAsync` |
+
+**Schema SQL** (`WorkTracking.Data/schema.sql`) — embedded resource, all tables use `CREATE TABLE IF NOT EXISTS`.
+
+**Migration infrastructure** (`WorkTracking.Data/Migrations/`) — `SchemaInitializer` auto-discovers and applies `migration_NNNN_*.sql` files in version order.
+
+### Tests added
+
+| Class | Tests | Coverage |
+|---|---|---|
+| `SchemaInitializerTests` | 2 | All tables created; idempotent run |
+| `DateConversionTests` | 8 | Round-trips, nullables, DateTime format |
+| `ClientRepositoryTests` | 7 | CRUD, nullable optional fields |
+| `WorkEntryRepositoryTests` | 6 | CRUD, date filter, invoiced filter, `MarkInvoiced` |
+| `WorkCategoryRepositoryTests` | 5 | CRUD, enable/disable per-client, no duplicates |
+| `InvoiceRepositoryTests` | 5 | CRUD, `AddWithLines` transactional, line FK |
+| `SettingRepositoryTests` | 5 | Get/set upsert, null value, `GetAll` |
+
+**Total new: 38 tests — all passing. Cumulative total: 54.**
+
+### Decisions made
+
+- `SqliteConnection.ClearAllPools()` called in `SqliteTestFixture.Dispose()` — required to release the file lock before temp DB deletion in tests.
+- `decimal` used for all financial values in C#; stored as `REAL` (double) in SQLite with explicit cast at the boundary.
+- `SchemaInitializer` extended to support numbered migration files (`migration_NNNN_*.sql`) embedded in `WorkTracking.Data/Migrations/`. Current schema version tracked in the `setting` table under key `schema_version`.
+- Migration files use additive-only DDL — no `DROP TABLE`, `DROP COLUMN`, or destructive renames (see copilot-instructions.md for full rules).
+- Each migration is wrapped in a transaction; failure rolls back cleanly.
 
 ---
 
