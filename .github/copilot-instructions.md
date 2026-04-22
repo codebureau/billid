@@ -110,6 +110,16 @@ docs/
 
 ---
 
+## Phase gate — required before advancing to the next phase
+
+Before moving to the next phase, the following must be in place:
+
+1. **Tests written and passing** — all new logic covered by unit or integration tests; `dotnet test` passes with no failures
+2. **`docs/progress.md` updated** — documents what was built in the phase, what tests were added, and any decisions made
+3. **`docs/running-and-testing.md` updated** — reflects the current state of the app: how to run it, how to run the tests, and what is testable at this point
+
+---
+
 ## Source of truth
 
 Always refer to the following docs for requirements and schema decisions:
@@ -118,3 +128,5 @@ Always refer to the following docs for requirements and schema decisions:
 - `docs/schema.sql`
 - `docs/requirements.md`
 - `docs/ui-spec.md`
+- `docs/progress.md` — living build log, updated each phase
+- `docs/running-and-testing.md` — how to run and test the app at the current state
