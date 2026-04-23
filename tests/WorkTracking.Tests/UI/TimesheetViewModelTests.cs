@@ -1,0 +1,205 @@
+using FluentAssertions;
+using Moq;
+using WorkTracking.Core.Models;
+using WorkTracking.Data.Repositories.Interfaces;
+using WorkTracking.UI.Services;
+using WorkTracking.UI.ViewModels;
+
+namespace WorkTracking.Tests.UI;
+
+public class TimesheetViewModelTests
+{
+    private static (TimesheetViewModel vm, Mock<IWorkEntryRepository> entryRepo, Mock<IWorkCategoryRepository> categoryRepo) MakeVm()
+    {
+        var entryRepo = new Mock<IWorkEntryRepository>();
+        var categoryRepo = new Mock<IWorkCategoryRepository>();
+        var invoiceRepo = new Mock<IInvoiceRepository>();
+        var dialogService = new Mock<IDialogService>();
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        return (vm, entryRepo, categoryRepo);
+    }
+
+    private static WorkEntry MakeEntry(int id, bool invoiced = false, decimal hours = 1m, int? categoryId = null) =>
+        new()
+        {
+            Id = id, ClientId = 1,
+            Date = DateOnly.FromDateTime(DateTime.Today),
+            Description = "Test",
+            Hours = hours,
+            InvoicedFlag = invoiced,
+            WorkCategoryId = categoryId
+        };
+
+    [Fact]
+    public async Task LoadAsync_WithEntries_PopulatesEntries()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1), MakeEntry(2)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.Entries.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithNoEntries_ReturnsEmptyEntries()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null)).ReturnsAsync([]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.Entries.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task TotalUninvoicedHours_SumsUninvoicedEntries()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, hours: 2m), MakeEntry(2, hours: 3m)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.TotalUninvoicedHours.Should().Be(5m);
+    }
+
+    [Fact]
+    public async Task TotalUninvoicedAmount_ReturnsHoursTimesRate()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, hours: 4m)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 150m, null);
+
+        vm.TotalUninvoicedAmount.Should().Be(600m);
+    }
+
+    [Fact]
+    public async Task IsOverCap_WhenAmountExceedsCap_ReturnsTrue()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, hours: 10m)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, 500m); // 10 × 100 = 1000 > 500
+
+        vm.IsOverCap.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task IsOverCap_WhenNoCap_ReturnsFalse()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, hours: 100m)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.IsOverCap.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task IsOverCap_WhenAmountUnderCap_ReturnsFalse()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, hours: 2m)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, 500m); // 2 × 100 = 200 < 500
+
+        vm.IsOverCap.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task CategorySummaryLines_GroupsUninvoicedByCategory()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        var cat = new WorkCategory { Id = 1, Name = "Development" };
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, hours: 3m, categoryId: 1), MakeEntry(2, hours: 2m, categoryId: 1)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([cat]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.CategorySummaryLines.Should().ContainSingle(l => l.CategoryName == "Development" && l.Hours == 5m);
+    }
+
+    [Fact]
+    public async Task HasAnySelectedUninvoiced_WhenUninvoicedEntrySelected_ReturnsTrue()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, invoiced: false)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+        vm.Entries[0].IsSelected = true;
+
+        vm.HasAnySelectedUninvoiced.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasAnySelectedUninvoiced_WhenNothingSelected_ReturnsFalse()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1), MakeEntry(2)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.HasAnySelectedUninvoiced.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Entries_CategoryName_ResolvesFromLoadedCategories()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        var cat = new WorkCategory { Id = 5, Name = "Support" };
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null))
+                 .ReturnsAsync([MakeEntry(1, categoryId: 5)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([cat]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.Entries.Single().CategoryName.Should().Be("Support");
+    }
+
+    [Fact]
+    public async Task InvoicedFilterText_Invoiced_PassesCorrectFilterToRepository()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, true, null))
+                 .ReturnsAsync([MakeEntry(1, invoiced: true)]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        vm.InvoicedFilterText = "Invoiced";
+        await vm.LoadAsync(1, 100m, null);
+
+        entryRepo.Verify(r => r.GetFilteredAsync(1, null, null, true, null), Times.AtLeastOnce);
+        vm.Entries.Should().ContainSingle(e => e.IsInvoiced);
+    }
+
+    [Fact]
+    public async Task InvoicedFilterText_All_PassesNullToRepository()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, null, null)).ReturnsAsync([]);
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([]);
+
+        vm.InvoicedFilterText = "All";
+        await vm.LoadAsync(1, 100m, null);
+
+        entryRepo.Verify(r => r.GetFilteredAsync(1, null, null, null, null), Times.AtLeastOnce);
+    }
+}

@@ -5,6 +5,7 @@ namespace WorkTracking.Data.Repositories.Interfaces;
 public interface IWorkEntryRepository
 {
     Task<IReadOnlyList<WorkEntry>> GetByClientAsync(int clientId);
+    Task<IReadOnlyList<WorkEntry>> GetByInvoiceIdAsync(int invoiceId);
     Task<IReadOnlyList<WorkEntry>> GetFilteredAsync(
         int clientId,
         DateOnly? from = null,

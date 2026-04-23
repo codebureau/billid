@@ -1,4 +1,4 @@
-# Running and Testing – Billable / WorkTracking
+﻿# Running and Testing – Billable / WorkTracking
 
 This file is updated at the end of every phase and always reflects the **current state** of the app: what you can run, what you can test, and how.
 
@@ -28,19 +28,24 @@ Or open `src\WorkTracking.slnx` directly from Visual Studio.
 
 ---
 
-## Current phase: Phase 2 — Data layer
+## Current phase: Phase 5 — Invoices & Summary tabs
 
 ### What is runnable
 
-The WPF application shell (`WorkTracking.UI`) can be launched. It shows the default WPF template window — no application logic is wired up in the UI yet.
+The app is fully functional with the Timesheet, Invoices, and Summary tabs. On launch:
 
-The full data layer is now in place: the SQLite database is created automatically at `%APPDATA%\Billable\billable.db` when the app starts (schema initializer runs on startup — this will be wired up in Phase 3).
+1. Schema initializer creates/updates `%APPDATA%\Billable\billable.db`.
+2. Main window opens with the client list on the left.
+3. Selecting a client loads all three active tabs:
+   - **Timesheet** — work entry grid with filters, notes drawer, footer totals, and a working **Prepare Invoice** button (select uninvoiced entries to enable it).
+   - **Invoices** — lists all invoices for the client; selecting one shows its lines and linked entries; Open PDF button for invoices with a file path.
+   - **Summary** — this-year totals (hours + invoiced amount), uninvoiced summary, cap status badge, frequency status badge, hours-per-month breakdown, hours-by-category breakdown.
 
 ### How to run the application
 
 **From Visual Studio:**
-1. Set `WorkTracking.UI` as the startup project (right-click → Set as Startup Project).
-2. Press `F5` or click **Start**.
+1. Set `WorkTracking.UI` as the startup project.
+2. Press `F5`.
 
 **From the terminal:**
 ```powershell
@@ -50,14 +55,27 @@ dotnet run
 
 ### What you will see
 
-A blank WPF window titled "MainWindow". No data, no navigation — this is the scaffold only.
+- Window titled **Billable**, 1100x650 px.
+- Select a client to activate the three tabs.
+- The grid is empty on a fresh database. Add test data (see below) to see entries.
+
+### Adding test data
+
+```powershell
+$db = "$env:APPDATA\Billable\billable.db"
+sqlite3 $db "INSERT INTO client (name, company_name, hourly_rate) VALUES ('Acme', 'Acme Corp', 150);"
+sqlite3 $db "INSERT INTO work_category (name) VALUES ('Development'), ('Support');"
+sqlite3 $db "INSERT INTO work_entry (client_id, date, description, hours, work_category_id, invoiced_flag) VALUES (1, '2025-06-01', 'Build feature X', 4.5, 1, 0);"
+sqlite3 $db "INSERT INTO work_entry (client_id, date, description, hours, work_category_id, invoiced_flag) VALUES (1, '2025-06-03', 'Client support call', 1.0, 2, 0);"
+```
+
+Then restart the app and select Acme.
 
 ---
 
 ## How to run the tests
 
 ```powershell
-# From the repo root
 cd src
 dotnet test WorkTracking.slnx
 ```
@@ -68,16 +86,23 @@ Or from Visual Studio: open **Test Explorer** and click **Run All**.
 
 | Test class | Tests | Status |
 |---|---|---|
-| `InvoiceCapCalculatorTests` | 7 | ✅ Passing |
-| `InvoiceFrequencyCalculatorTests` | 8 | ✅ Passing |
-| `SchemaInitializerTests` | 2 | ✅ Passing |
-| `DateConversionTests` | 8 | ✅ Passing |
-| `ClientRepositoryTests` | 7 | ✅ Passing |
-| `WorkEntryRepositoryTests` | 6 | ✅ Passing |
-| `WorkCategoryRepositoryTests` | 5 | ✅ Passing |
-| `InvoiceRepositoryTests` | 5 | ✅ Passing |
-| `SettingRepositoryTests` | 5 | ✅ Passing |
-| **Total** | **54** | **✅ All passing** |
+| `InvoiceCapCalculatorTests` | 7 | Passing |
+| `InvoiceFrequencyCalculatorTests` | 8 | Passing |
+| `SchemaInitializerTests` | 2 | Passing |
+| `DateConversionTests` | 8 | Passing |
+| `ClientRepositoryTests` | 7 | Passing |
+| `WorkEntryRepositoryTests` | 6 | Passing |
+| `WorkCategoryRepositoryTests` | 5 | Passing |
+| `InvoiceRepositoryTests` | 5 | Passing |
+| `SettingRepositoryTests` | 5 | Passing |
+| `ClientDetailViewModelTests` | 6 | Passing |
+| `ClientListViewModelTests` | 6 | Passing |
+| `MainWindowViewModelTests` | 4 | Passing |
+| `TimesheetViewModelTests` | 12 | Passing |
+| `InvoicesViewModelTests` | 7 | Passing |
+| `SummaryViewModelTests` | 8 | Passing |
+| `InvoicePrepViewModelTests` | 8 | Passing |
+| **Total** | **108** | **All passing** |
 
 ---
 
@@ -89,12 +114,3 @@ dotnet build WorkTracking.slnx
 ```
 
 Expected output: `Build succeeded` with no errors or warnings.
-
----
-
-## Upcoming (Phase 3)
-
-After Phase 3 completes this file will be updated to include:
-- How to launch the app with a real client list visible
-- How to navigate between clients
-- ViewModel unit tests for `ClientListViewModel` and `ClientDetailViewModel`

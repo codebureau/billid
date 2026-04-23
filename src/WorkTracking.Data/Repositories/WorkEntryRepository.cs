@@ -11,6 +11,23 @@ public class WorkEntryRepository(IDatabaseConnectionFactory connectionFactory) :
     public async Task<IReadOnlyList<WorkEntry>> GetByClientAsync(int clientId)
         => await GetFilteredAsync(clientId);
 
+    public async Task<IReadOnlyList<WorkEntry>> GetByInvoiceIdAsync(int invoiceId)
+    {
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT * FROM work_entry WHERE invoice_id = $invoiceId ORDER BY date DESC";
+        command.Parameters.AddWithValue("$invoiceId", invoiceId);
+
+        var entries = new List<WorkEntry>();
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            entries.Add(MapWorkEntry(reader));
+
+        return entries;
+    }
+
     public async Task<IReadOnlyList<WorkEntry>> GetFilteredAsync(
         int clientId,
         DateOnly? from = null,

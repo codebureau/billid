@@ -3,10 +3,91 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WorkTracking.UI"
+        xmlns:vm="clr-namespace:WorkTracking.UI.ViewModels"
+        xmlns:views="clr-namespace:WorkTracking.UI.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Billable" Height="650" Width="1100"
+        MinHeight="400" MinWidth="700">
 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" MinWidth="160"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: client list -->
+        <DockPanel Grid.Column="0" Background="#F5F5F5">
+            <TextBlock DockPanel.Dock="Top" Text="Clients"
+                       FontWeight="SemiBold" FontSize="14"
+                       Margin="10,12,10,4"/>
+            <TextBox DockPanel.Dock="Top"
+                     Text="{Binding ClientList.SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="8,4,8,6"
+                     Padding="4"
+                     x:Name="SearchBox"/>
+            <ListBox ItemsSource="{Binding ClientList.Clients}"
+                     SelectedItem="{Binding ClientList.SelectedClient}"
+                     BorderThickness="0"
+                     Background="Transparent">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="4,3">
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding CompanyName}" FontSize="11" Foreground="Gray"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Column="1" Width="4"
+                      HorizontalAlignment="Stretch"
+                      Background="#DDDDDD"/>
+
+        <!-- Right: client detail -->
+        <Grid Grid.Column="2">
+            <!-- No client selected -->
+            <TextBlock Text="Select a client to get started."
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="Gray" FontSize="14"
+                       Visibility="{Binding ClientDetail.HasClient,
+                           Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+
+            <!-- Client detail tabs -->
+            <DockPanel Visibility="{Binding ClientDetail.HasClient,
+                           Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock DockPanel.Dock="Top"
+                           Text="{Binding ClientDetail.Client.Name}"
+                           FontSize="18" FontWeight="Bold"
+                           Margin="16,14,16,6"/>
+                <TabControl SelectedIndex="{Binding ClientDetail.SelectedTabIndex}"
+                            Margin="8,0,8,8">
+                    <TabItem Header="Timesheet">
+                        <views:TimesheetView DataContext="{Binding ClientDetail.Timesheet}"/>
+                    </TabItem>
+                    <TabItem Header="Invoices">
+                        <TextBlock Text="Invoices — coming in Phase 5"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="Gray"/>
+                    </TabItem>
+                    <TabItem Header="Summary">
+                        <TextBlock Text="Summary — coming in Phase 5"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="Gray"/>
+                    </TabItem>
+                    <TabItem Header="Settings">
+                        <TextBlock Text="Settings — coming in Phase 6"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="Gray"/>
+                    </TabItem>
+                </TabControl>
+            </DockPanel>
+        </Grid>
     </Grid>
 </Window>
