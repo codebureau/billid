@@ -5,7 +5,8 @@ namespace WorkTracking.UI.ViewModels;
 public class ClientDetailViewModel(
     TimesheetViewModel timesheetViewModel,
     InvoicesViewModel invoicesViewModel,
-    SummaryViewModel summaryViewModel) : ViewModelBase
+    SummaryViewModel summaryViewModel,
+    ClientSettingsViewModel clientSettingsViewModel) : ViewModelBase
 {
     private Client? _client;
     private int _selectedTabIndex;
@@ -13,6 +14,7 @@ public class ClientDetailViewModel(
     public TimesheetViewModel Timesheet { get; } = timesheetViewModel;
     public InvoicesViewModel Invoices { get; } = invoicesViewModel;
     public SummaryViewModel Summary { get; } = summaryViewModel;
+    public ClientSettingsViewModel Settings { get; } = clientSettingsViewModel;
 
     public Client? Client
     {
@@ -36,10 +38,16 @@ public class ClientDetailViewModel(
         _ = Timesheet.LoadAsync(client.Id, client.HourlyRate, client.InvoiceCapAmount);
         _ = Invoices.LoadAsync(client.Id);
         _ = Summary.LoadAsync(client);
+        _ = Settings.LoadAsync(client);
         Timesheet.InvoiceCreated += (_, _) =>
         {
             _ = Invoices.LoadAsync(client.Id);
             _ = Summary.LoadAsync(client);
+        };
+        Settings.ClientUpdated += (_, updatedClient) =>
+        {
+            Client = updatedClient;
+            OnPropertyChanged(nameof(HasClient));
         };
     }
 

@@ -1,0 +1,185 @@
+using System.Collections.ObjectModel;
+using System.Windows.Input;
+using WorkTracking.Core.Models;
+using WorkTracking.Data.Repositories.Interfaces;
+using WorkTracking.UI.Commands;
+
+namespace WorkTracking.UI.ViewModels;
+
+public class ClientSettingsViewModel(
+    IClientRepository clientRepository,
+    IWorkCategoryRepository workCategoryRepository) : ViewModelBase
+{
+    private Client? _client;
+    private bool _isDirty;
+    private bool _isSaving;
+
+    // --- editable fields ---
+    private string _name = string.Empty;
+    private string? _contactName;
+    private string? _companyName;
+    private string? _address;
+    private string? _abn;
+    private string? _email;
+    private string? _phone;
+    private decimal _hourlyRate;
+    private decimal? _invoiceCapAmount;
+    private string? _invoiceCapBehavior;
+    private int? _invoiceFrequencyDays;
+
+    public static IReadOnlyList<string> CapBehaviorOptions { get; } = ["warn", "block", "allow"];
+
+    public bool IsDirty
+    {
+        get => _isDirty;
+        private set => SetField(ref _isDirty, value);
+    }
+
+    public bool IsSaving
+    {
+        get => _isSaving;
+        private set => SetField(ref _isSaving, value);
+    }
+
+    public string Name
+    {
+        get => _name;
+        set { if (SetField(ref _name, value)) IsDirty = true; }
+    }
+
+    public string? ContactName
+    {
+        get => _contactName;
+        set { if (SetField(ref _contactName, value)) IsDirty = true; }
+    }
+
+    public string? CompanyName
+    {
+        get => _companyName;
+        set { if (SetField(ref _companyName, value)) IsDirty = true; }
+    }
+
+    public string? Address
+    {
+        get => _address;
+        set { if (SetField(ref _address, value)) IsDirty = true; }
+    }
+
+    public string? Abn
+    {
+        get => _abn;
+        set { if (SetField(ref _abn, value)) IsDirty = true; }
+    }
+
+    public string? Email
+    {
+        get => _email;
+        set { if (SetField(ref _email, value)) IsDirty = true; }
+    }
+
+    public string? Phone
+    {
+        get => _phone;
+        set { if (SetField(ref _phone, value)) IsDirty = true; }
+    }
+
+    public decimal HourlyRate
+    {
+        get => _hourlyRate;
+        set { if (SetField(ref _hourlyRate, value)) IsDirty = true; }
+    }
+
+    public decimal? InvoiceCapAmount
+    {
+        get => _invoiceCapAmount;
+        set { if (SetField(ref _invoiceCapAmount, value)) IsDirty = true; }
+    }
+
+    public string? InvoiceCapBehavior
+    {
+        get => _invoiceCapBehavior;
+        set { if (SetField(ref _invoiceCapBehavior, value)) IsDirty = true; }
+    }
+
+    public int? InvoiceFrequencyDays
+    {
+        get => _invoiceFrequencyDays;
+        set { if (SetField(ref _invoiceFrequencyDays, value)) IsDirty = true; }
+    }
+
+    public ObservableCollection<CategoryToggleViewModel> Categories { get; } = [];
+
+    public ICommand SaveCommand => new RelayCommand(
+        async _ => await SaveAsync(),
+        _ => IsDirty && !IsSaving && !string.IsNullOrWhiteSpace(_name));
+
+    public event EventHandler<Client>? ClientUpdated;
+
+    public async Task LoadAsync(Client client)
+    {
+        _client = client;
+
+        Name = client.Name;
+        ContactName = client.ContactName;
+        CompanyName = client.CompanyName;
+        Address = client.Address;
+        Abn = client.Abn;
+        Email = client.Email;
+        Phone = client.Phone;
+        HourlyRate = client.HourlyRate;
+        InvoiceCapAmount = client.InvoiceCapAmount;
+        InvoiceCapBehavior = client.InvoiceCapBehavior;
+        InvoiceFrequencyDays = client.InvoiceFrequencyDays;
+
+        var allCategories = await workCategoryRepository.GetAllAsync();
+        var enabledCategories = await workCategoryRepository.GetByClientAsync(client.Id);
+        var enabledIds = enabledCategories.Select(c => c.Id).ToHashSet();
+
+        Categories.Clear();
+        foreach (var cat in allCategories.OrderBy(c => c.Name))
+            Categories.Add(new CategoryToggleViewModel(cat, enabledIds.Contains(cat.Id)));
+
+        IsDirty = false;
+    }
+
+    public async Task SaveAsync()
+    {
+        if (_client is null) return;
+
+        IsSaving = true;
+        try
+        {
+            _client.Name = Name;
+            _client.ContactName = ContactName;
+            _client.CompanyName = CompanyName;
+            _client.Address = Address;
+            _client.Abn = Abn;
+            _client.Email = Email;
+            _client.Phone = Phone;
+            _client.HourlyRate = HourlyRate;
+            _client.InvoiceCapAmount = InvoiceCapAmount;
+            _client.InvoiceCapBehavior = InvoiceCapBehavior;
+            _client.InvoiceFrequencyDays = InvoiceFrequencyDays;
+            _client.UpdatedAt = DateTime.UtcNow;
+
+            await clientRepository.UpdateAsync(_client);
+
+            var enabledCategories = await workCategoryRepository.GetByClientAsync(_client.Id);
+            var wasEnabled = enabledCategories.Select(c => c.Id).ToHashSet();
+            var nowEnabled = Categories.Where(c => c.IsEnabled).Select(c => c.Id).ToHashSet();
+
+            foreach (var id in nowEnabled.Except(wasEnabled))
+                await workCategoryRepository.EnableForClientAsync(_client.Id, id);
+
+            foreach (var id in wasEnabled.Except(nowEnabled))
+                await workCategoryRepository.DisableForClientAsync(_client.Id, id);
+
+            IsDirty = false;
+            ClientUpdated?.Invoke(this, _client);
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+}

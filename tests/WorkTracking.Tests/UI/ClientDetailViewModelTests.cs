@@ -43,8 +43,17 @@ public class ClientDetailViewModelTests
         return new SummaryViewModel(invoiceRepo.Object, entryRepo.Object, categoryRepo.Object);
     }
 
+    private static ClientSettingsViewModel MakeSettingsVm()
+    {
+        var clientRepo = new Mock<IClientRepository>();
+        var categoryRepo = new Mock<IWorkCategoryRepository>();
+        categoryRepo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
+        return new ClientSettingsViewModel(clientRepo.Object, categoryRepo.Object);
+    }
+
     private static ClientDetailViewModel MakeVm() =>
-        new(MakeTimesheetVm(), MakeInvoicesVm(), MakeSummaryVm());
+        new(MakeTimesheetVm(), MakeInvoicesVm(), MakeSummaryVm(), MakeSettingsVm());
 
     [Fact]
     public void HasClient_WhenNew_ReturnsFalse()

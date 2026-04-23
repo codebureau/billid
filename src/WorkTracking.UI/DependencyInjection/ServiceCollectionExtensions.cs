@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<TimesheetViewModel>();
         services.AddTransient<InvoicesViewModel>();
         services.AddTransient<SummaryViewModel>();
+        services.AddTransient<ClientSettingsViewModel>();
         services.AddTransient<ClientListViewModel>();
         services.AddTransient<ClientDetailViewModel>();
         services.AddTransient<MainWindowViewModel>();

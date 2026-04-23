@@ -309,9 +309,52 @@ Key `TimesheetViewModel` features:
 
 ---
 
-## Phase 6 — Client Settings tab
+## Phase 6 — Client Settings tab (complete)
 
-_To be completed._
+### What was built
+
+**ViewModels** (`WorkTracking.UI/ViewModels/`)
+
+| Class | Responsibility |
+|---|---|
+| `CategoryToggleViewModel` | Wraps `WorkCategory`; exposes `IsEnabled` (notifying) for checkbox binding |
+| `ClientSettingsViewModel` | All editable client fields; `Categories` collection of `CategoryToggleViewModel`; `IsDirty` flag; `IsSaving` flag; `SaveCommand`; fires `ClientUpdated` event on successful save |
+
+Key `ClientSettingsViewModel` features:
+- `LoadAsync(Client client)` — populates all fields and builds `Categories` with enabled flags from `GetByClientAsync`; clears `IsDirty`
+- `SaveCommand` — enabled when `IsDirty && !IsSaving && Name` is non-empty; calls `UpdateAsync` then diffs category enable/disable
+- Category diff: only calls `EnableForClientAsync` / `DisableForClientAsync` for categories whose state actually changed
+- `ClientUpdated` event — raised after save so `ClientDetailViewModel` can refresh the displayed client name
+- `CapBehaviorOptions` — static list `["warn", "block", "allow"]` bound to a ComboBox
+
+**View** (`WorkTracking.UI/Views/ClientSettingsView.xaml`)
+
+| Section | Detail |
+|---|---|
+| Client details form | Name, Contact name, Company, Address (multi-line), ABN, Email, Phone — two-column `Grid` layout |
+| Billing section | Invoice cap ($), Cap behaviour (ComboBox), Invoice frequency (days) |
+| Work categories | `ItemsControl` of `CheckBox` items, alphabetically sorted; only checked categories appear in timesheet |
+| Save bar | "Save changes" button + "Saving…" indicator |
+
+**`ClientDetailViewModel`** — updated to inject `ClientSettingsViewModel`; `LoadClient` calls `Settings.LoadAsync` fire-and-forget; subscribes to `Settings.ClientUpdated` to update the displayed `Client` reference.
+
+**`MainWindow.xaml`** — Invoices, Summary, and Settings tab placeholders replaced with `InvoicesView`, `SummaryView`, and `ClientSettingsView` bound to `ClientDetail.Invoices`, `ClientDetail.Summary`, and `ClientDetail.Settings` respectively.
+
+**DI** — `ClientSettingsViewModel` registered as Transient in `ServiceCollectionExtensions`.
+
+### Tests added
+
+| Class | Tests | Coverage |
+|---|---|---|
+| `ClientSettingsViewModelTests` | 14 | Field population on load, dirty flag cleared on load, categories loaded with enabled flags, alphabetical sort, dirty flag set on field change, `SaveCommand` can/cannot execute, `UpdateAsync` called with correct data, dirty cleared on save, `ClientUpdated` event, enable/disable new category, disable removed category, no-op for unchanged categories, `CapBehaviorOptions` values |
+
+**Total new: 14 tests — all passing. Cumulative total: 122.**
+
+### Decisions made
+
+- `IsDirty` is set by any property setter change — toggling a category checkbox does not set `IsDirty` directly (categories are diff-saved); this keeps the save button inactive for category-only changes unless another field was also changed. A future improvement could track category dirty state separately.
+- Category enable/disable diff is computed at save time by re-fetching the current DB state, not by storing the original snapshot — avoids stale state if another tab triggers a reload.
+- `ClientUpdated` event passes the mutated `Client` instance back to `ClientDetailViewModel` so the client name in the header updates immediately without a full list reload.
 
 ---
 

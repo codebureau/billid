@@ -28,18 +28,19 @@ Or open `src\WorkTracking.slnx` directly from Visual Studio.
 
 ---
 
-## Current phase: Phase 5 — Invoices & Summary tabs
+## Current phase: Phase 6 — Client Settings tab
 
 ### What is runnable
 
-The app is fully functional with the Timesheet, Invoices, and Summary tabs. On launch:
+All four client tabs are now fully functional. On launch:
 
 1. Schema initializer creates/updates `%APPDATA%\Billable\billable.db`.
 2. Main window opens with the client list on the left.
-3. Selecting a client loads all three active tabs:
-   - **Timesheet** — work entry grid with filters, notes drawer, footer totals, and a working **Prepare Invoice** button (select uninvoiced entries to enable it).
-   - **Invoices** — lists all invoices for the client; selecting one shows its lines and linked entries; Open PDF button for invoices with a file path.
-   - **Summary** — this-year totals (hours + invoiced amount), uninvoiced summary, cap status badge, frequency status badge, hours-per-month breakdown, hours-by-category breakdown.
+3. Selecting a client loads all four tabs:
+   - **Timesheet** — work entry grid with filters, notes drawer, footer totals, and a working **Prepare Invoice** button.
+   - **Invoices** — lists all invoices; selecting one shows lines and linked entries; Open PDF button.
+   - **Summary** — this-year totals, uninvoiced summary, cap/frequency status badges, hours-per-month and by-category breakdowns.
+   - **Settings** — editable form for all client fields + work category enable/disable checkboxes; **Save changes** button.
 
 ### How to run the application
 
@@ -56,7 +57,7 @@ dotnet run
 ### What you will see
 
 - Window titled **Billable**, 1100x650 px.
-- Select a client to activate the three tabs.
+- Select a client to activate all four tabs.
 - The grid is empty on a fresh database. Add test data (see below) to see entries.
 
 ### Adding test data
@@ -65,6 +66,7 @@ dotnet run
 $db = "$env:APPDATA\Billable\billable.db"
 sqlite3 $db "INSERT INTO client (name, company_name, hourly_rate) VALUES ('Acme', 'Acme Corp', 150);"
 sqlite3 $db "INSERT INTO work_category (name) VALUES ('Development'), ('Support');"
+sqlite3 $db "INSERT INTO client_work_category (client_id, work_category_id) VALUES (1, 1), (1, 2);"
 sqlite3 $db "INSERT INTO work_entry (client_id, date, description, hours, work_category_id, invoiced_flag) VALUES (1, '2025-06-01', 'Build feature X', 4.5, 1, 0);"
 sqlite3 $db "INSERT INTO work_entry (client_id, date, description, hours, work_category_id, invoiced_flag) VALUES (1, '2025-06-03', 'Client support call', 1.0, 2, 0);"
 ```
@@ -102,7 +104,8 @@ Or from Visual Studio: open **Test Explorer** and click **Run All**.
 | `InvoicesViewModelTests` | 7 | Passing |
 | `SummaryViewModelTests` | 8 | Passing |
 | `InvoicePrepViewModelTests` | 8 | Passing |
-| **Total** | **108** | **All passing** |
+| `ClientSettingsViewModelTests` | 14 | Passing |
+| **Total** | **122** | **All passing** |
 
 ---
 

@@ -47,7 +47,16 @@ public class MainWindowViewModelTests
         return new SummaryViewModel(invoiceRepo.Object, entryRepo.Object, categoryRepo.Object);
     }
 
-    private static ClientDetailViewModel MakeDetailVm() => new(MakeTimesheetVm(), MakeInvoicesVm(), MakeSummaryVm());
+    private static ClientSettingsViewModel MakeSettingsVm()
+    {
+        var clientRepo = new Mock<IClientRepository>();
+        var categoryRepo = new Mock<IWorkCategoryRepository>();
+        categoryRepo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
+        return new ClientSettingsViewModel(clientRepo.Object, categoryRepo.Object);
+    }
+
+    private static ClientDetailViewModel MakeDetailVm() => new(MakeTimesheetVm(), MakeInvoicesVm(), MakeSummaryVm(), MakeSettingsVm());
 
     [Fact]
     public async Task InitializeAsync_LoadsClientList()
