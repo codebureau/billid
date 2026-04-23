@@ -233,6 +233,56 @@ public class TimesheetViewModel(
 
     public ICommand RefreshCommand => new RelayCommand(async param => await ApplyFiltersAsync());
 
+    public ICommand AddEntryCommand => new RelayCommand(async _ =>
+    {
+        var enabledCategories = CategoriesWithAll.Skip(1).ToList();
+        var vm = new WorkEntryDialogViewModel(enabledCategories);
+        if (!dialogService.ShowWorkEntryDialog(vm)) return;
+
+        var entry = new WorkEntry
+        {
+            ClientId = _clientId,
+            Date = DateOnly.FromDateTime(vm.Date),
+            Description = vm.Description,
+            Hours = vm.Hours,
+            WorkCategoryId = vm.SelectedCategory?.Id,
+            NotesMarkdown = vm.NotesMarkdown,
+            InvoicedFlag = false
+        };
+        await workEntryRepository.AddAsync(entry);
+        await ApplyFiltersAsync();
+    });
+
+    public ICommand EditEntryCommand => new RelayCommand(
+        async _ =>
+        {
+            if (_selectedEntry is null) return;
+            var enabledCategories = CategoriesWithAll.Skip(1).ToList();
+            var vm = new WorkEntryDialogViewModel(enabledCategories, _selectedEntry.Entry);
+            if (!dialogService.ShowWorkEntryDialog(vm)) return;
+
+            var entry = _selectedEntry.Entry;
+            entry.Date = DateOnly.FromDateTime(vm.Date);
+            entry.Description = vm.Description;
+            entry.Hours = vm.Hours;
+            entry.WorkCategoryId = vm.SelectedCategory?.Id;
+            entry.NotesMarkdown = vm.NotesMarkdown;
+            await workEntryRepository.UpdateAsync(entry);
+            await ApplyFiltersAsync();
+        },
+        _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced);
+
+    public ICommand DeleteEntryCommand => new RelayCommand(
+        async _ =>
+        {
+            if (_selectedEntry is null) return;
+            if (!dialogService.Confirm($"Delete entry '{_selectedEntry.Description}'?", "Delete Entry"))
+                return;
+            await workEntryRepository.DeleteAsync(_selectedEntry.Id);
+            await ApplyFiltersAsync();
+        },
+        _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced);
+
     public event EventHandler? InvoiceCreated;
 
     // --- Data loading ---

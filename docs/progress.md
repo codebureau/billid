@@ -358,6 +358,55 @@ Key `ClientSettingsViewModel` features:
 
 ---
 
-## Phase 7 — Polish & logging
+## Phase 7 — CRUD operations (complete)
+
+### What was built
+
+**ViewModels**
+
+| Class | Responsibility |
+|---|---|
+| `AddClientViewModel` | `Name`, `HourlyRate`; `ConfirmCommand` (requires both); `CancelCommand`; `CloseRequested` event |
+| `WorkEntryDialogViewModel` | Add or edit a work entry — `Date`, `Description`, `Hours`, `SelectedCategory`, `NotesMarkdown`; `IsEdit`/`Title`; `ConfirmCommand`/`CancelCommand`; `CloseRequested` event |
+
+**Views**
+
+| View | Detail |
+|---|---|
+| `AddClientDialog.xaml` | Minimal modal — Name + Hourly rate; note directs user to Settings for remaining fields |
+| `WorkEntryDialog.xaml` | Modal for add and edit — Date, Description, Hours, Category (ComboBox), Notes (multi-line) |
+
+**`ClientListViewModel`** — now requires `IDialogService`; adds `AddClientCommand` (dialog → `AddAsync` → reload → select new) and `DeleteClientCommand` (confirm → `DeleteAsync` → reload).
+
+**`TimesheetViewModel`** — adds `AddEntryCommand`, `EditEntryCommand` (disabled when entry is invoiced), `DeleteEntryCommand` (disabled when entry is invoiced) — all show appropriate dialogs, call repository, then call `ApplyFiltersAsync`.
+
+**`ClientSettingsViewModel`** — adds `NewCategoryName` property and `AddCategoryCommand` — creates a new global `WorkCategory` then immediately enables it for the current client.
+
+**`IDialogService` / `DialogService`** — two new methods: `ShowAddClientDialog` and `ShowWorkEntryDialog`.
+
+**`MainWindow.xaml`** — client list header now has a **+ Add** button; client detail header now has a **Delete client** button (bound to `ClientList.DeleteClientCommand`); Timesheet toolbar gains **+ Add entry**, **✏ Edit**, **🗑 Delete** buttons.
+
+**`ClientSettingsView.xaml`** — categories section now has an inline text box + **+ Add category** button.
+
+### Tests added
+
+| Class | Tests | Coverage |
+|---|---|---|
+| `AddClientViewModelTests` | 5 | Empty name/zero rate block execute, valid inputs allow execute, confirm sets flag + closes, cancel closes without confirm |
+| `ClientListViewModelCrudTests` | 5 | Add confirmed → `AddAsync` called; add cancelled → no call; delete confirmed → `DeleteAsync` called; delete declined → no call; no selection → cannot execute |
+| `WorkEntryDialogViewModelTests` | 7 | New entry defaults (today, `IsEdit=false`), existing entry populates all fields + `IsEdit=true`, empty description/zero hours block execute, valid inputs allow execute, confirm + cancel behaviour |
+
+**Total new: 17 tests — all passing. Cumulative total: 139.**
+
+### Decisions made
+
+- `AddClientDialog` asks for Name + HourlyRate only — the two required fields. All optional fields are reachable immediately via the Settings tab after the client is created.
+- `EditEntryCommand` and `DeleteEntryCommand` are disabled for invoiced entries — preserving invoice integrity without needing a hard block in the repository.
+- `AddCategoryCommand` creates the category globally and enables it for the current client in one step — no separate "global category management" screen needed at this stage.
+- `DeleteClientCommand` is placed in the detail header (bound to `ClientList.DeleteClientCommand`) to keep it contextually clear which client is being deleted.
+
+---
+
+## Phase 8 — Polish & logging
 
 _To be completed._

@@ -112,6 +112,16 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
+            <!-- Add new category -->
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <TextBox Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}"
+                         Width="180" Padding="4,3" Margin="0,0,6,0"
+                         ToolTip="New category name"/>
+                <Button Content="+ Add category"
+                        Command="{Binding AddCategoryCommand}"
+                        Padding="8,3" FontSize="11"/>
+            </StackPanel>
+
             <!-- Save -->
             <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                 <Button Content="Save changes"

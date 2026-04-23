@@ -28,19 +28,20 @@ Or open `src\WorkTracking.slnx` directly from Visual Studio.
 
 ---
 
-## Current phase: Phase 6 — Client Settings tab
+## Current phase: Phase 7 — CRUD operations
 
 ### What is runnable
 
-All four client tabs are now fully functional. On launch:
+The app is now fully usable without any raw SQL setup. On launch:
 
 1. Schema initializer creates/updates `%APPDATA%\Billable\billable.db`.
-2. Main window opens with the client list on the left.
-3. Selecting a client loads all four tabs:
-   - **Timesheet** — work entry grid with filters, notes drawer, footer totals, and a working **Prepare Invoice** button.
-   - **Invoices** — lists all invoices; selecting one shows lines and linked entries; Open PDF button.
-   - **Summary** — this-year totals, uninvoiced summary, cap/frequency status badges, hours-per-month and by-category breakdowns.
-   - **Settings** — editable form for all client fields + work category enable/disable checkboxes; **Save changes** button.
+2. Main window opens — click **+ Add** in the client list to create your first client.
+3. Select a client to activate all four tabs:
+   - **Timesheet** — use **+ Add entry** to log work; select a row to **✏ Edit** or **🗑 Delete** it; select uninvoiced entries and click **Prepare Invoice**.
+   - **Invoices** — lists all invoices; selecting one shows lines and linked entries.
+   - **Summary** — this-year totals, cap/frequency status, charts.
+   - **Settings** — edit all client fields; manage work categories (enable/disable existing, add new via inline field + **+ Add category** button); **Save changes**.
+4. **Delete client** button is in the client detail header (requires confirmation).
 
 ### How to run the application
 
@@ -57,21 +58,8 @@ dotnet run
 ### What you will see
 
 - Window titled **Billable**, 1100x650 px.
-- Select a client to activate all four tabs.
-- The grid is empty on a fresh database. Add test data (see below) to see entries.
-
-### Adding test data
-
-```powershell
-$db = "$env:APPDATA\Billable\billable.db"
-sqlite3 $db "INSERT INTO client (name, company_name, hourly_rate) VALUES ('Acme', 'Acme Corp', 150);"
-sqlite3 $db "INSERT INTO work_category (name) VALUES ('Development'), ('Support');"
-sqlite3 $db "INSERT INTO client_work_category (client_id, work_category_id) VALUES (1, 1), (1, 2);"
-sqlite3 $db "INSERT INTO work_entry (client_id, date, description, hours, work_category_id, invoiced_flag) VALUES (1, '2025-06-01', 'Build feature X', 4.5, 1, 0);"
-sqlite3 $db "INSERT INTO work_entry (client_id, date, description, hours, work_category_id, invoiced_flag) VALUES (1, '2025-06-03', 'Client support call', 1.0, 2, 0);"
-```
-
-Then restart the app and select Acme.
+- On first run the client list is empty — click **+ Add** to create a client.
+- All data entry flows through dialogs — no raw SQL required.
 
 ---
 
@@ -105,7 +93,10 @@ Or from Visual Studio: open **Test Explorer** and click **Run All**.
 | `SummaryViewModelTests` | 8 | Passing |
 | `InvoicePrepViewModelTests` | 8 | Passing |
 | `ClientSettingsViewModelTests` | 14 | Passing |
-| **Total** | **122** | **All passing** |
+| `AddClientViewModelTests` | 5 | Passing |
+| `ClientListViewModelCrudTests` | 5 | Passing |
+| `WorkEntryDialogViewModelTests` | 7 | Passing |
+| **Total** | **139** | **All passing** |
 
 ---
 

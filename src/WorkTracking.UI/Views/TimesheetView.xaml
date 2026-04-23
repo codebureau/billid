@@ -59,6 +59,15 @@
 
                 <ToggleButton Content="📝 Notes" IsChecked="{Binding IsNotesOpen}"
                               Padding="6,2" FontSize="11"/>
+
+                <Separator Width="1" Height="18" Margin="10,0" Background="#CCC"/>
+
+                <Button Content="+ Add entry" Command="{Binding AddEntryCommand}"
+                        Margin="0,0,4,0" Padding="7,2" FontSize="11"/>
+                <Button Content="✏ Edit" Command="{Binding EditEntryCommand}"
+                        Margin="0,0,4,0" Padding="7,2" FontSize="11"/>
+                <Button Content="🗑 Delete" Command="{Binding DeleteEntryCommand}"
+                        Padding="7,2" FontSize="11"/>
             </WrapPanel>
         </Border>
 

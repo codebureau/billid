@@ -2,6 +2,7 @@ using FluentAssertions;
 using Moq;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories.Interfaces;
+using WorkTracking.UI.Services;
 using WorkTracking.UI.ViewModels;
 
 namespace WorkTracking.Tests.UI;
@@ -22,10 +23,13 @@ public class ClientListViewModelTests
         return mock;
     }
 
+    private static ClientListViewModel MakeVm(List<Client> clients) =>
+        new(RepoWith(clients).Object, new Mock<IDialogService>().Object);
+
     [Fact]
     public async Task LoadAsync_WithClients_PopulatesClients()
     {
-        var vm = new ClientListViewModel(RepoWith(SampleClients()).Object);
+        var vm = MakeVm(SampleClients());
 
         await vm.LoadAsync();
 
@@ -35,7 +39,7 @@ public class ClientListViewModelTests
     [Fact]
     public async Task LoadAsync_WithNoClients_ReturnsEmptyList()
     {
-        var vm = new ClientListViewModel(RepoWith([]).Object);
+        var vm = MakeVm([]);
 
         await vm.LoadAsync();
 
@@ -45,7 +49,7 @@ public class ClientListViewModelTests
     [Fact]
     public async Task SearchText_FiltersByName_CaseInsensitive()
     {
-        var vm = new ClientListViewModel(RepoWith(SampleClients()).Object);
+        var vm = MakeVm(SampleClients());
         await vm.LoadAsync();
 
         vm.SearchText = "alpha";
@@ -56,7 +60,7 @@ public class ClientListViewModelTests
     [Fact]
     public async Task SearchText_WhenCleared_ShowsAllClients()
     {
-        var vm = new ClientListViewModel(RepoWith(SampleClients()).Object);
+        var vm = MakeVm(SampleClients());
         await vm.LoadAsync();
         vm.SearchText = "alpha";
 
@@ -68,7 +72,7 @@ public class ClientListViewModelTests
     [Fact]
     public async Task SearchText_NoMatch_ReturnsEmptyList()
     {
-        var vm = new ClientListViewModel(RepoWith(SampleClients()).Object);
+        var vm = MakeVm(SampleClients());
         await vm.LoadAsync();
 
         vm.SearchText = "zzz";
@@ -79,7 +83,7 @@ public class ClientListViewModelTests
     [Fact]
     public async Task SelectedClient_SetAndGet_RaisesPropertyChanged()
     {
-        var vm = new ClientListViewModel(RepoWith(SampleClients()).Object);
+        var vm = MakeVm(SampleClients());
         await vm.LoadAsync();
         var raised = new List<string?>();
         vm.PropertyChanged += (_, e) => raised.Add(e.PropertyName);

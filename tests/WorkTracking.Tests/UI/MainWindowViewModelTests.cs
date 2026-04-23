@@ -13,7 +13,7 @@ public class MainWindowViewModelTests
     {
         var mock = new Mock<IClientRepository>();
         mock.Setup(r => r.GetAllAsync()).ReturnsAsync(clients ?? []);
-        return new ClientListViewModel(mock.Object);
+        return new ClientListViewModel(mock.Object, new Mock<IDialogService>().Object);
     }
 
     private static TimesheetViewModel MakeTimesheetVm()

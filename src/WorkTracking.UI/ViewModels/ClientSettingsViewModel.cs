@@ -13,6 +13,7 @@ public class ClientSettingsViewModel(
     private Client? _client;
     private bool _isDirty;
     private bool _isSaving;
+    private string _newCategoryName = string.Empty;
 
     // --- editable fields ---
     private string _name = string.Empty;
@@ -112,6 +113,23 @@ public class ClientSettingsViewModel(
     public ICommand SaveCommand => new RelayCommand(
         async _ => await SaveAsync(),
         _ => IsDirty && !IsSaving && !string.IsNullOrWhiteSpace(_name));
+
+    public string NewCategoryName
+    {
+        get => _newCategoryName;
+        set => SetField(ref _newCategoryName, value);
+    }
+
+    public ICommand AddCategoryCommand => new RelayCommand(
+        async _ =>
+        {
+            if (string.IsNullOrWhiteSpace(_newCategoryName) || _client is null) return;
+            var category = await workCategoryRepository.AddAsync(new WorkCategory { Name = _newCategoryName.Trim() });
+            await workCategoryRepository.EnableForClientAsync(_client.Id, category.Id);
+            Categories.Add(new CategoryToggleViewModel(category, isEnabled: true));
+            NewCategoryName = string.Empty;
+        },
+        _ => !string.IsNullOrWhiteSpace(_newCategoryName));
 
     public event EventHandler<Client>? ClientUpdated;
 

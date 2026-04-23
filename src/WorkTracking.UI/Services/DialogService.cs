@@ -32,4 +32,24 @@ public class DialogService : IDialogService
         dialog.ShowDialog();
         return vm.Confirmed;
     }
+
+    public bool ShowAddClientDialog(ViewModels.AddClientViewModel vm)
+    {
+        var dialog = new Views.AddClientDialog(vm)
+        {
+            Owner = Application.Current.MainWindow
+        };
+        dialog.ShowDialog();
+        return vm.Confirmed;
+    }
+
+    public bool ShowWorkEntryDialog(ViewModels.WorkEntryDialogViewModel vm)
+    {
+        var dialog = new Views.WorkEntryDialog(vm)
+        {
+            Owner = Application.Current.MainWindow
+        };
+        dialog.ShowDialog();
+        return vm.Confirmed;
+    }
 }
