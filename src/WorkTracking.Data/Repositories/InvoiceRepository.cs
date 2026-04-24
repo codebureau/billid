@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Database;
 using WorkTracking.Data.Helpers;
@@ -6,7 +7,7 @@ using WorkTracking.Data.Repositories.Interfaces;
 
 namespace WorkTracking.Data.Repositories;
 
-public class InvoiceRepository(IDatabaseConnectionFactory connectionFactory) : IInvoiceRepository
+public class InvoiceRepository(IDatabaseConnectionFactory connectionFactory, ILogger<InvoiceRepository> logger) : IInvoiceRepository
 {
     public async Task<IReadOnlyList<Invoice>> GetByClientAsync(int clientId)
     {
@@ -103,6 +104,7 @@ public class InvoiceRepository(IDatabaseConnectionFactory connectionFactory) : I
             }
 
             await transaction.CommitAsync();
+            logger.LogInformation("Created invoice {InvoiceId} '{InvoiceNumber}' for client {ClientId}", invoice.Id, invoice.InvoiceNumber, invoice.ClientId);
             return invoice;
         }
         catch
@@ -144,6 +146,7 @@ public class InvoiceRepository(IDatabaseConnectionFactory connectionFactory) : I
         command.Parameters.AddWithValue("$id", id);
 
         await command.ExecuteNonQueryAsync();
+        logger.LogInformation("Deleted invoice {InvoiceId}", id);
     }
 
     private static Invoice MapInvoice(SqliteDataReader reader) => new()

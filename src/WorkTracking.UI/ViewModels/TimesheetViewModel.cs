@@ -1,5 +1,8 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 using System.Windows.Input;
+using Markdig;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories.Interfaces;
 using WorkTracking.UI.Commands;
@@ -20,6 +23,7 @@ public class TimesheetViewModel(
     private decimal? _invoiceCapAmount;
 
     private ObservableCollection<WorkEntryRowViewModel> _entries = [];
+    private ICollectionView? _entriesView;
     private ObservableCollection<WorkCategory> _categories = [];
     private WorkEntryRowViewModel? _selectedEntry;
     private WorkCategory? _selectedFilterCategory;
@@ -28,12 +32,21 @@ public class TimesheetViewModel(
     private DateOnly? _filterEndDate;
     private bool _isNotesOpen = true;
     private bool _isLoading;
+    private string _selectedGroupBy = "None";
 
     public ObservableCollection<WorkEntryRowViewModel> Entries
     {
         get => _entries;
-        private set => SetField(ref _entries, value);
+        private set
+        {
+            SetField(ref _entries, value);
+            _entriesView = CollectionViewSource.GetDefaultView(value);
+            ApplyGrouping();
+            OnPropertyChanged(nameof(EntriesView));
+        }
     }
+
+    public ICollectionView? EntriesView => _entriesView;
 
     public ObservableCollection<WorkCategory> Categories
     {
@@ -55,6 +68,7 @@ public class TimesheetViewModel(
         {
             SetField(ref _selectedEntry, value);
             OnPropertyChanged(nameof(HasSelectedEntry));
+            OnPropertyChanged(nameof(RenderedNotesHtml));
         }
     }
 
@@ -123,6 +137,30 @@ public class TimesheetViewModel(
     {
         get => _isLoading;
         set => SetField(ref _isLoading, value);
+    }
+
+    public IReadOnlyList<string> GroupByOptions { get; } = ["None", "Work category", "Invoice", "Month"];
+
+    public string SelectedGroupBy
+    {
+        get => _selectedGroupBy;
+        set
+        {
+            if (SetField(ref _selectedGroupBy, value))
+                ApplyGrouping();
+        }
+    }
+
+    public string RenderedNotesHtml
+    {
+        get
+        {
+            var md = _selectedEntry?.NotesMarkdown;
+            if (string.IsNullOrWhiteSpace(md))
+                return "<html><body></body></html>";
+            var html = Markdown.ToHtml(md);
+            return $"<html><body style='font-family:Segoe UI,sans-serif;font-size:12px;margin:6px'>{html}</body></html>";
+        }
     }
 
     // --- Summary ---
@@ -239,18 +277,25 @@ public class TimesheetViewModel(
         var vm = new WorkEntryDialogViewModel(enabledCategories);
         if (!dialogService.ShowWorkEntryDialog(vm)) return;
 
-        var entry = new WorkEntry
+        try
         {
-            ClientId = _clientId,
-            Date = DateOnly.FromDateTime(vm.Date),
-            Description = vm.Description,
-            Hours = vm.Hours,
-            WorkCategoryId = vm.SelectedCategory?.Id,
-            NotesMarkdown = vm.NotesMarkdown,
-            InvoicedFlag = false
-        };
-        await workEntryRepository.AddAsync(entry);
-        await ApplyFiltersAsync();
+            var entry = new WorkEntry
+            {
+                ClientId = _clientId,
+                Date = DateOnly.FromDateTime(vm.Date),
+                Description = vm.Description,
+                Hours = vm.Hours,
+                WorkCategoryId = vm.SelectedCategory?.Id,
+                NotesMarkdown = vm.NotesMarkdown,
+                InvoicedFlag = false
+            };
+            await workEntryRepository.AddAsync(entry);
+            await ApplyFiltersAsync();
+        }
+        catch (Exception ex)
+        {
+            dialogService.ShowError($"Failed to add entry: {ex.Message}");
+        }
     });
 
     public ICommand EditEntryCommand => new RelayCommand(
@@ -261,14 +306,21 @@ public class TimesheetViewModel(
             var vm = new WorkEntryDialogViewModel(enabledCategories, _selectedEntry.Entry);
             if (!dialogService.ShowWorkEntryDialog(vm)) return;
 
-            var entry = _selectedEntry.Entry;
-            entry.Date = DateOnly.FromDateTime(vm.Date);
-            entry.Description = vm.Description;
-            entry.Hours = vm.Hours;
-            entry.WorkCategoryId = vm.SelectedCategory?.Id;
-            entry.NotesMarkdown = vm.NotesMarkdown;
-            await workEntryRepository.UpdateAsync(entry);
-            await ApplyFiltersAsync();
+            try
+            {
+                var entry = _selectedEntry.Entry;
+                entry.Date = DateOnly.FromDateTime(vm.Date);
+                entry.Description = vm.Description;
+                entry.Hours = vm.Hours;
+                entry.WorkCategoryId = vm.SelectedCategory?.Id;
+                entry.NotesMarkdown = vm.NotesMarkdown;
+                await workEntryRepository.UpdateAsync(entry);
+                await ApplyFiltersAsync();
+            }
+            catch (Exception ex)
+            {
+                dialogService.ShowError($"Failed to update entry: {ex.Message}");
+            }
         },
         _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced);
 
@@ -278,8 +330,15 @@ public class TimesheetViewModel(
             if (_selectedEntry is null) return;
             if (!dialogService.Confirm($"Delete entry '{_selectedEntry.Description}'?", "Delete Entry"))
                 return;
-            await workEntryRepository.DeleteAsync(_selectedEntry.Id);
-            await ApplyFiltersAsync();
+            try
+            {
+                await workEntryRepository.DeleteAsync(_selectedEntry.Id);
+                await ApplyFiltersAsync();
+            }
+            catch (Exception ex)
+            {
+                dialogService.ShowError($"Failed to delete entry: {ex.Message}");
+            }
         },
         _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced);
 
@@ -335,6 +394,24 @@ public class TimesheetViewModel(
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private void ApplyGrouping()
+    {
+        if (_entriesView is null) return;
+        _entriesView.GroupDescriptions.Clear();
+        switch (_selectedGroupBy)
+        {
+            case "Work category":
+                _entriesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(WorkEntryRowViewModel.CategoryName)));
+                break;
+            case "Invoice":
+                _entriesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(WorkEntryRowViewModel.InvoiceRef)));
+                break;
+            case "Month":
+                _entriesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(WorkEntryRowViewModel.MonthLabel)));
+                break;
         }
     }
 

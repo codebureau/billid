@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories;
 
@@ -12,8 +13,8 @@ public class WorkCategoryRepositoryTests : IDisposable
 
     public WorkCategoryRepositoryTests()
     {
-        _repository = new WorkCategoryRepository(_fixture.ConnectionFactory);
-        _clientRepository = new ClientRepository(_fixture.ConnectionFactory);
+        _repository = new WorkCategoryRepository(_fixture.ConnectionFactory, NullLogger<WorkCategoryRepository>.Instance);
+        _clientRepository = new ClientRepository(_fixture.ConnectionFactory, NullLogger<ClientRepository>.Instance);
     }
 
     public void Dispose() => _fixture.Dispose();

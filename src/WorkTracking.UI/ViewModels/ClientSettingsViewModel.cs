@@ -3,12 +3,14 @@ using System.Windows.Input;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories.Interfaces;
 using WorkTracking.UI.Commands;
+using WorkTracking.UI.Services;
 
 namespace WorkTracking.UI.ViewModels;
 
 public class ClientSettingsViewModel(
     IClientRepository clientRepository,
-    IWorkCategoryRepository workCategoryRepository) : ViewModelBase
+    IWorkCategoryRepository workCategoryRepository,
+    IDialogService dialogService) : ViewModelBase
 {
     private Client? _client;
     private bool _isDirty;
@@ -155,7 +157,11 @@ public class ClientSettingsViewModel(
 
         Categories.Clear();
         foreach (var cat in allCategories.OrderBy(c => c.Name))
-            Categories.Add(new CategoryToggleViewModel(cat, enabledIds.Contains(cat.Id)));
+        {
+            var toggle = new CategoryToggleViewModel(cat, enabledIds.Contains(cat.Id));
+            toggle.PropertyChanged += (_, _) => IsDirty = true;
+            Categories.Add(toggle);
+        }
 
         IsDirty = false;
     }
@@ -194,6 +200,10 @@ public class ClientSettingsViewModel(
 
             IsDirty = false;
             ClientUpdated?.Invoke(this, _client);
+        }
+        catch (Exception ex)
+        {
+            dialogService.ShowError($"Failed to save client settings: {ex.Message}");
         }
         finally
         {

@@ -2,6 +2,7 @@ using FluentAssertions;
 using Moq;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories.Interfaces;
+using WorkTracking.UI.Services;
 using WorkTracking.UI.ViewModels;
 
 namespace WorkTracking.Tests.UI;
@@ -31,9 +32,10 @@ public class ClientSettingsViewModelTests
     {
         var clientRepo = new Mock<IClientRepository>();
         var categoryRepo = new Mock<IWorkCategoryRepository>();
+        var dialogService = new Mock<IDialogService>();
         categoryRepo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
-        return (new ClientSettingsViewModel(clientRepo.Object, categoryRepo.Object), clientRepo, categoryRepo);
+        return (new ClientSettingsViewModel(clientRepo.Object, categoryRepo.Object, dialogService.Object), clientRepo, categoryRepo);
     }
 
     [Fact]

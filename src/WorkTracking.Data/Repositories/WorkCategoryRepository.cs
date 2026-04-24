@@ -1,11 +1,12 @@
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Database;
 using WorkTracking.Data.Repositories.Interfaces;
 
 namespace WorkTracking.Data.Repositories;
 
-public class WorkCategoryRepository(IDatabaseConnectionFactory connectionFactory) : IWorkCategoryRepository
+public class WorkCategoryRepository(IDatabaseConnectionFactory connectionFactory, ILogger<WorkCategoryRepository> logger) : IWorkCategoryRepository
 {
     public async Task<IReadOnlyList<WorkCategory>> GetAllAsync()
     {
@@ -72,6 +73,7 @@ public class WorkCategoryRepository(IDatabaseConnectionFactory connectionFactory
         command.Parameters.AddWithValue("$description", (object?)category.Description ?? DBNull.Value);
 
         category.Id = Convert.ToInt32(await command.ExecuteScalarAsync());
+        logger.LogInformation("Added work category {CategoryId} '{Name}'", category.Id, category.Name);
         return category;
     }
 

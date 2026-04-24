@@ -50,6 +50,11 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <TextBlock Text="No clients yet — click + Add to get started."
+                       Foreground="Gray" FontSize="11" FontStyle="Italic"
+                       TextWrapping="Wrap" Margin="10,8"
+                       Visibility="{Binding ClientList.HasClients,
+                           Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
         </DockPanel>
 
         <!-- Splitter -->

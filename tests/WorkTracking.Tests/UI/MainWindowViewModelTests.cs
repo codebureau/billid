@@ -51,9 +51,10 @@ public class MainWindowViewModelTests
     {
         var clientRepo = new Mock<IClientRepository>();
         var categoryRepo = new Mock<IWorkCategoryRepository>();
+        var dialogService = new Mock<IDialogService>();
         categoryRepo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
-        return new ClientSettingsViewModel(clientRepo.Object, categoryRepo.Object);
+        return new ClientSettingsViewModel(clientRepo.Object, categoryRepo.Object, dialogService.Object);
     }
 
     private static ClientDetailViewModel MakeDetailVm() => new(MakeTimesheetVm(), MakeInvoicesVm(), MakeSummaryVm(), MakeSettingsVm());

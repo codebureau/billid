@@ -16,8 +16,14 @@ public class ClientListViewModel(IClientRepository clientRepository, IDialogServ
     public ObservableCollection<Client> Clients
     {
         get => _clients;
-        private set => SetField(ref _clients, value);
+        private set
+        {
+            SetField(ref _clients, value);
+            OnPropertyChanged(nameof(HasClients));
+        }
     }
+
+    public bool HasClients => _clients.Count > 0;
 
     public Client? SelectedClient
     {

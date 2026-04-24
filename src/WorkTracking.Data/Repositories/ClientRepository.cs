@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Database;
 using WorkTracking.Data.Helpers;
@@ -6,7 +7,7 @@ using WorkTracking.Data.Repositories.Interfaces;
 
 namespace WorkTracking.Data.Repositories;
 
-public class ClientRepository(IDatabaseConnectionFactory connectionFactory) : IClientRepository
+public class ClientRepository(IDatabaseConnectionFactory connectionFactory, ILogger<ClientRepository> logger) : IClientRepository
 {
     public async Task<IReadOnlyList<Client>> GetAllAsync()
     {
@@ -55,6 +56,7 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory) : IC
         BindClientParameters(command, client);
 
         client.Id = Convert.ToInt32(await command.ExecuteScalarAsync());
+        logger.LogInformation("Added client {ClientId} '{Name}'", client.Id, client.Name);
         return client;
     }
 
@@ -80,6 +82,7 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory) : IC
         command.Parameters.AddWithValue("$id", client.Id);
 
         await command.ExecuteNonQueryAsync();
+        logger.LogInformation("Updated client {ClientId} '{Name}'", client.Id, client.Name);
     }
 
     public async Task DeleteAsync(int id)
@@ -92,6 +95,7 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory) : IC
         command.Parameters.AddWithValue("$id", id);
 
         await command.ExecuteNonQueryAsync();
+        logger.LogInformation("Deleted client {ClientId}", id);
     }
 
     private static void BindClientParameters(SqliteCommand command, Client client)

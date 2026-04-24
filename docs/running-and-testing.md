@@ -1,4 +1,4 @@
-Ôªø# Running and Testing ‚Äì Billable / WorkTracking
+# Running and Testing ñ Billable / WorkTracking
 
 This file is updated at the end of every phase and always reflects the **current state** of the app: what you can run, what you can test, and how.
 
@@ -28,19 +28,19 @@ Or open `src\WorkTracking.slnx` directly from Visual Studio.
 
 ---
 
-## Current phase: Phase 7 ‚Äî CRUD operations
+## Current phase: Phase 7 ó CRUD operations
 
 ### What is runnable
 
 The app is now fully usable without any raw SQL setup. On launch:
 
 1. Schema initializer creates/updates `%APPDATA%\Billable\billable.db`.
-2. Main window opens ‚Äî click **+ Add** in the client list to create your first client.
+2. Main window opens ó click **+ Add** in the client list to create your first client.
 3. Select a client to activate all four tabs:
-   - **Timesheet** ‚Äî use **+ Add entry** to log work; select a row to **‚úè Edit** or **üóë Delete** it; select uninvoiced entries and click **Prepare Invoice**.
-   - **Invoices** ‚Äî lists all invoices; selecting one shows lines and linked entries.
-   - **Summary** ‚Äî this-year totals, cap/frequency status, charts.
-   - **Settings** ‚Äî edit all client fields; manage work categories (enable/disable existing, add new via inline field + **+ Add category** button); **Save changes**.
+   - **Timesheet** ó use **+ Add entry** to log work; select a row to **? Edit** or **?? Delete** it; select uninvoiced entries and click **Prepare Invoice**.
+   - **Invoices** ó lists all invoices; selecting one shows lines and linked entries.
+   - **Summary** ó this-year totals, cap/frequency status, charts.
+   - **Settings** ó edit all client fields; manage work categories (enable/disable existing, add new via inline field + **+ Add category** button); **Save changes**.
 4. **Delete client** button is in the client detail header (requires confirmation).
 
 ### How to run the application
@@ -58,8 +58,8 @@ dotnet run
 ### What you will see
 
 - Window titled **Billable**, 1100x650 px.
-- On first run the client list is empty ‚Äî click **+ Add** to create a client.
-- All data entry flows through dialogs ‚Äî no raw SQL required.
+- On first run the client list is empty ó click **+ Add** to create a client.
+- All data entry flows through dialogs ó no raw SQL required.
 
 ---
 
@@ -96,7 +96,14 @@ Or from Visual Studio: open **Test Explorer** and click **Run All**.
 | `AddClientViewModelTests` | 5 | Passing |
 | `ClientListViewModelCrudTests` | 5 | Passing |
 | `WorkEntryDialogViewModelTests` | 7 | Passing |
-| **Total** | **139** | **All passing** |
+| ``ClientListViewModelEmptyStateTests`` | 2 | Passing |
+| ``ClientSettingsViewModelCategoryDirtyTests`` | 1 | Passing |
+| ``ClientSettingsViewModelErrorHandlingTests`` | 1 | Passing |
+| ``TimesheetViewModelGroupingTests`` | 3 | Passing |
+| ``TimesheetViewModelMarkdownTests`` | 2 | Passing |
+| ``WorkEntryRowViewModelMonthLabelTests`` | 1 | Passing |
+| ``WorkEntryRowViewModelIsInvoicedTests`` | 3 | Passing |
+| **Total** | **152** | **All passing** |
 
 ---
 

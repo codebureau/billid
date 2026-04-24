@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Database;
 using WorkTracking.Data.Helpers;
@@ -6,7 +7,7 @@ using WorkTracking.Data.Repositories.Interfaces;
 
 namespace WorkTracking.Data.Repositories;
 
-public class WorkEntryRepository(IDatabaseConnectionFactory connectionFactory) : IWorkEntryRepository
+public class WorkEntryRepository(IDatabaseConnectionFactory connectionFactory, ILogger<WorkEntryRepository> logger) : IWorkEntryRepository
 {
     public async Task<IReadOnlyList<WorkEntry>> GetByClientAsync(int clientId)
         => await GetFilteredAsync(clientId);
@@ -104,6 +105,7 @@ public class WorkEntryRepository(IDatabaseConnectionFactory connectionFactory) :
         BindWorkEntryParameters(command, entry);
 
         entry.Id = Convert.ToInt32(await command.ExecuteScalarAsync());
+        logger.LogInformation("Added work entry {EntryId} for client {ClientId}", entry.Id, entry.ClientId);
         return entry;
     }
 
@@ -125,6 +127,7 @@ public class WorkEntryRepository(IDatabaseConnectionFactory connectionFactory) :
         command.Parameters.AddWithValue("$id", entry.Id);
 
         await command.ExecuteNonQueryAsync();
+        logger.LogInformation("Updated work entry {EntryId}", entry.Id);
     }
 
     public async Task DeleteAsync(int id)
@@ -137,6 +140,7 @@ public class WorkEntryRepository(IDatabaseConnectionFactory connectionFactory) :
         command.Parameters.AddWithValue("$id", id);
 
         await command.ExecuteNonQueryAsync();
+        logger.LogInformation("Deleted work entry {EntryId}", id);
     }
 
     public async Task MarkInvoicedAsync(IEnumerable<int> ids, int invoiceId)

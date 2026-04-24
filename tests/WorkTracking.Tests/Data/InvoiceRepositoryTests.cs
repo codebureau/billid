@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories;
 
@@ -13,8 +14,8 @@ public class InvoiceRepositoryTests : IDisposable
 
     public InvoiceRepositoryTests()
     {
-        _repository = new InvoiceRepository(_fixture.ConnectionFactory);
-        _clientRepository = new ClientRepository(_fixture.ConnectionFactory);
+        _repository = new InvoiceRepository(_fixture.ConnectionFactory, NullLogger<InvoiceRepository>.Instance);
+        _clientRepository = new ClientRepository(_fixture.ConnectionFactory, NullLogger<ClientRepository>.Instance);
         _clientId = _clientRepository.AddAsync(new Client { Name = "Test Client", HourlyRate = 100m })
             .GetAwaiter().GetResult().Id;
     }

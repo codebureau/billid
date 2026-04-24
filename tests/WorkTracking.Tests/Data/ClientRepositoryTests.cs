@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories;
 using WorkTracking.Tests.Data;
@@ -10,7 +11,7 @@ public class ClientRepositoryTests : IDisposable
     private readonly SqliteTestFixture _fixture = new();
     private readonly ClientRepository _repository;
 
-    public ClientRepositoryTests() => _repository = new ClientRepository(_fixture.ConnectionFactory);
+    public ClientRepositoryTests() => _repository = new ClientRepository(_fixture.ConnectionFactory, NullLogger<ClientRepository>.Instance);
 
     public void Dispose() => _fixture.Dispose();
 

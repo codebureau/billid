@@ -15,6 +15,7 @@ public class WorkEntryRowViewModel(WorkEntry entry, string? categoryName) : View
     public bool IsInvoiced => Entry.InvoicedFlag;
     public string InvoiceRef => Entry.InvoiceId.HasValue ? $"#{Entry.InvoiceId}" : string.Empty;
     public string? NotesMarkdown => Entry.NotesMarkdown;
+    public string MonthLabel => Date.ToString("MMMM yyyy");
 
     public bool IsSelected
     {
