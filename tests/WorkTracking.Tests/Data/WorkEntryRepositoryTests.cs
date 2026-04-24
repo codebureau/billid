@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories;
@@ -11,6 +11,7 @@ public class WorkEntryRepositoryTests : IDisposable
     private readonly WorkEntryRepository _repository;
     private readonly ClientRepository _clientRepository;
     private readonly InvoiceRepository _invoiceRepository;
+    private readonly WorkCategoryRepository _categoryRepository;
     private int _clientId;
 
     public WorkEntryRepositoryTests()
@@ -18,6 +19,7 @@ public class WorkEntryRepositoryTests : IDisposable
         _repository = new WorkEntryRepository(_fixture.ConnectionFactory, NullLogger<WorkEntryRepository>.Instance);
         _clientRepository = new ClientRepository(_fixture.ConnectionFactory, NullLogger<ClientRepository>.Instance);
         _invoiceRepository = new InvoiceRepository(_fixture.ConnectionFactory, NullLogger<InvoiceRepository>.Instance);
+        _categoryRepository = new WorkCategoryRepository(_fixture.ConnectionFactory, NullLogger<WorkCategoryRepository>.Instance);
         _clientId = _clientRepository.AddAsync(new Client { Name = "Test Client", HourlyRate = 100m })
             .GetAwaiter().GetResult().Id;
     }
@@ -104,11 +106,42 @@ public class WorkEntryRepositoryTests : IDisposable
         fetched.Should().BeNull();
     }
 
-    private static WorkEntry BuildEntry(int clientId, DateOnly date, decimal hours) => new()
+
+    [Fact]
+    public async Task GetFilteredAsync_ByWorkCategoryId_ReturnsMatchingEntries()
+    {
+        var cat1 = await _categoryRepository.AddAsync(new WorkCategory { Name = "Dev" });
+        var cat2 = await _categoryRepository.AddAsync(new WorkCategory { Name = "Support" });
+        await _repository.AddAsync(BuildEntry(_clientId, new DateOnly(2025, 1, 1), 1m, workCategoryId: cat1.Id));
+        await _repository.AddAsync(BuildEntry(_clientId, new DateOnly(2025, 1, 2), 2m, workCategoryId: cat2.Id));
+        await _repository.AddAsync(BuildEntry(_clientId, new DateOnly(2025, 1, 3), 3m, workCategoryId: cat1.Id));
+
+        var result = await _repository.GetFilteredAsync(_clientId, workCategoryId: cat1.Id);
+
+        result.Should().HaveCount(2);
+        result.Should().AllSatisfy(e => e.WorkCategoryId.Should().Be(cat1.Id));
+    }
+
+    [Fact]
+    public async Task GetFilteredAsync_WithNullCategoryId_ReturnsAllEntries()
+    {
+        var cat1 = await _categoryRepository.AddAsync(new WorkCategory { Name = "Dev" });
+        var cat2 = await _categoryRepository.AddAsync(new WorkCategory { Name = "Support" });
+        await _repository.AddAsync(BuildEntry(_clientId, new DateOnly(2025, 1, 1), 1m, workCategoryId: cat1.Id));
+        await _repository.AddAsync(BuildEntry(_clientId, new DateOnly(2025, 1, 2), 2m, workCategoryId: cat2.Id));
+        await _repository.AddAsync(BuildEntry(_clientId, new DateOnly(2025, 1, 3), 3m));
+
+        var result = await _repository.GetFilteredAsync(_clientId, workCategoryId: null);
+
+        result.Should().HaveCount(3);
+    }
+
+    private static WorkEntry BuildEntry(int clientId, DateOnly date, decimal hours, int? workCategoryId = null) => new()
     {
         ClientId = clientId,
         Date = date,
         Description = "Test work",
         Hours = hours,
+        WorkCategoryId = workCategoryId,
     };
 }
