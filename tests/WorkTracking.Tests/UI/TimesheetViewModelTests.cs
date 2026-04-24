@@ -203,3 +203,69 @@ public class TimesheetViewModelTests
         entryRepo.Verify(r => r.GetFilteredAsync(1, null, null, null, null), Times.AtLeastOnce);
     }
 }
+
+// -- DeleteEntryCommand confirm gate (issue #7) --------------------------------
+
+public class TimesheetViewModelDeleteConfirmTests
+{
+    private static (TimesheetViewModel vm, Mock<IWorkEntryRepository> entryRepo, Mock<IDialogService> dialogService) MakeVm()
+    {
+        var entryRepo = new Mock<IWorkEntryRepository>();
+        var categoryRepo = new Mock<IWorkCategoryRepository>();
+        var invoiceRepo = new Mock<IInvoiceRepository>();
+        var dialogService = new Mock<IDialogService>();
+        categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
+        entryRepo.Setup(r => r.GetFilteredAsync(It.IsAny<int>(), null, null, false, null))
+                 .ReturnsAsync([]);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        return (vm, entryRepo, dialogService);
+    }
+
+    private static WorkEntry MakeEntry(int id) => new()
+    {
+        Id = id, ClientId = 1,
+        Date = DateOnly.FromDateTime(DateTime.Today),
+        Description = "Test entry", Hours = 1m
+    };
+
+    [Fact]
+    public async Task DeleteEntryCommand_WhenConfirmed_DeletesEntry()
+    {
+        var (vm, entryRepo, dialogService) = MakeVm();
+        dialogService.Setup(d => d.Confirm(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+        entryRepo.Setup(r => r.DeleteAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
+
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(42), null);
+        vm.DeleteEntryCommand.Execute(null);
+
+        entryRepo.Verify(r => r.DeleteAsync(42), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteEntryCommand_WhenDeclined_DoesNotDelete()
+    {
+        var (vm, entryRepo, dialogService) = MakeVm();
+        dialogService.Setup(d => d.Confirm(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(42), null);
+        vm.DeleteEntryCommand.Execute(null);
+
+        entryRepo.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeleteEntryCommand_AlwaysShowsConfirmPrompt()
+    {
+        var (vm, entryRepo, dialogService) = MakeVm();
+        dialogService.Setup(d => d.Confirm(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+        entryRepo.Setup(r => r.DeleteAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
+
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1), null);
+        vm.DeleteEntryCommand.Execute(null);
+
+        dialogService.Verify(d => d.Confirm(It.Is<string>(m => m.Contains("Test entry")), It.IsAny<string>()), Times.Once);
+    }
+}

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using WorkTracking.Data.Database;
 using WorkTracking.UI.DependencyInjection;
 using WorkTracking.UI.ViewModels;
@@ -10,6 +12,14 @@ namespace WorkTracking.UI;
 public partial class App : Application
 {
     private ServiceProvider? _serviceProvider;
+
+    public App()
+    {
+        EventManager.RegisterClassHandler(
+            typeof(TextBox),
+            UIElement.GotKeyboardFocusEvent,
+            new KeyboardFocusChangedEventHandler((s, _) => ((TextBox)s).SelectAll()));
+    }
 
     private async void OnStartup(object sender, StartupEventArgs e)
     {
