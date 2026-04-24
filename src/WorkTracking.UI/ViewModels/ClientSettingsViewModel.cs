@@ -35,7 +35,11 @@ public class ClientSettingsViewModel(
     public bool IsDirty
     {
         get => _isDirty;
-        private set => SetField(ref _isDirty, value);
+        private set
+        {
+            if (SetField(ref _isDirty, value))
+                System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+        }
     }
 
     public bool IsSaving
