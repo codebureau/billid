@@ -1,0 +1,9 @@
+-- Migrations are numbered SQL files applied in order at startup.
+-- Filename pattern: migration_{version:D4}_{description}.sql
+-- Example: migration_0002_add_client_notes.sql
+--
+-- Rules:
+--   - Never DROP TABLE or DROP COLUMN.
+--   - Always use additive, backwards-compatible changes.
+--   - Each migration is wrapped in a transaction by SchemaInitializer.
+--   - schema_version in the setting table is updated after each migration.

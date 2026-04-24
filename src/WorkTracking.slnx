@@ -1,0 +1,25 @@
+<Solution>
+  <Project Path="../tests/WorkTracking.Tests/WorkTracking.Tests.csproj" />
+  <Project Path="WorkTracking.Core/WorkTracking.Core.csproj" />
+  <Project Path="WorkTracking.Data/WorkTracking.Data.csproj" />
+  <Project Path="WorkTracking.UI/WorkTracking.UI.csproj">
+    <Configurations>
+      <Configuration Solution="Debug|Any CPU" Project="Debug|Any CPU" />
+      <Configuration Solution="Release|Any CPU" Project="Release|Any CPU" />
+    </Configurations>
+  </Project>
+  <Folder Name="/docs/">
+    <File Path="../docs/architecture.md" />
+    <File Path="../docs/copilot-bootstrap.md" />
+    <File Path="../docs/progress.md" />
+    <File Path="../docs/requirements.md" />
+    <File Path="../docs/running-and-testing.md" />
+    <File Path="../docs/schema.sql" />
+    <File Path="../docs/ui-spec.md" />
+  </Folder>
+  <Properties>
+    <StartupProjects>
+      <StartupProject Path="WorkTracking.UI/WorkTracking.UI.csproj" />
+    </StartupProjects>
+  </Properties>
+</Solution>
