@@ -381,3 +381,77 @@ public class TimesheetViewModelInvoicedLockTests
         capturedVm!.IsReadOnly.Should().BeTrue();
     }
 }
+
+// -- Issue #5: Category filter on timesheet ----------------------------------
+
+public class TimesheetViewModelCategoryFilterTests
+{
+    private static (TimesheetViewModel vm, Mock<IWorkEntryRepository> entryRepo, Mock<IWorkCategoryRepository> categoryRepo) MakeVm()
+    {
+        var entryRepo = new Mock<IWorkEntryRepository>();
+        var categoryRepo = new Mock<IWorkCategoryRepository>();
+        var invoiceRepo = new Mock<IInvoiceRepository>();
+        var dialogService = new Mock<IDialogService>();
+        categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
+        entryRepo.Setup(r => r.GetFilteredAsync(It.IsAny<int>(), null, null, false, null))
+                 .ReturnsAsync([]);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        return (vm, entryRepo, categoryRepo);
+    }
+
+    [Fact]
+    public async Task SelectedFilterCategory_WhenSetToSpecificCategory_PassesCategoryIdToRepository()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        var cat = new WorkCategory { Id = 7, Name = "Development" };
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([cat]);
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, 7)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedFilterCategory = cat;
+
+        entryRepo.Verify(r => r.GetFilteredAsync(1, null, null, false, 7), Times.AtLeastOnce);
+    }
+
+    [Fact]
+    public async Task SelectedFilterCategory_WhenResetToAll_PassesNullCategoryToRepository()
+    {
+        var (vm, entryRepo, categoryRepo) = MakeVm();
+        var cat = new WorkCategory { Id = 7, Name = "Development" };
+        var all = new WorkCategory { Id = 0, Name = "All categories" };
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([cat]);
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, null)).ReturnsAsync([]);
+        entryRepo.Setup(r => r.GetFilteredAsync(1, null, null, false, 7)).ReturnsAsync([]);
+
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedFilterCategory = cat;
+        vm.SelectedFilterCategory = all;
+
+        entryRepo.Verify(r => r.GetFilteredAsync(1, null, null, false, null), Times.AtLeastOnce);
+    }
+
+    [Fact]
+    public async Task CategoriesWithAll_AlwaysHasAllCategoriesSentinelFirst()
+    {
+        var (vm, _, categoryRepo) = MakeVm();
+        var cat = new WorkCategory { Id = 3, Name = "Support" };
+        categoryRepo.Setup(r => r.GetByClientAsync(1)).ReturnsAsync([cat]);
+
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.CategoriesWithAll.Should().HaveCount(2);
+        vm.CategoriesWithAll[0].Id.Should().Be(0);
+        vm.CategoriesWithAll[0].Name.Should().Be("All categories");
+        vm.CategoriesWithAll[1].Name.Should().Be("Support");
+    }
+
+    [Fact]
+    public async Task SelectedFilterCategory_DefaultsToAllCategories()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.SelectedFilterCategory.Id.Should().Be(0);
+        vm.SelectedFilterCategory.Name.Should().Be("All categories");
+    }
+}
