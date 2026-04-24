@@ -13,6 +13,7 @@ public interface IWorkEntryRepository
         bool? invoiced = null,
         int? workCategoryId = null);
     Task<WorkEntry?> GetByIdAsync(int id);
+    Task<Dictionary<int, decimal>> GetUninvoicedHoursByClientAsync();
     Task<WorkEntry> AddAsync(WorkEntry entry);
     Task UpdateAsync(WorkEntry entry);
     Task DeleteAsync(int id);

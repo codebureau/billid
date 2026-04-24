@@ -12,6 +12,22 @@ public class WorkEntryRepository(IDatabaseConnectionFactory connectionFactory, I
     public async Task<IReadOnlyList<WorkEntry>> GetByClientAsync(int clientId)
         => await GetFilteredAsync(clientId);
 
+    public async Task<Dictionary<int, decimal>> GetUninvoicedHoursByClientAsync()
+    {
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT client_id, SUM(hours) FROM work_entry WHERE invoiced_flag = 0 GROUP BY client_id";
+
+        var result = new Dictionary<int, decimal>();
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            result[reader.GetInt32(0)] = (decimal)reader.GetDouble(1);
+
+        return result;
+    }
+
     public async Task<IReadOnlyList<WorkEntry>> GetByInvoiceIdAsync(int invoiceId)
     {
         await using var connection = connectionFactory.CreateConnection();

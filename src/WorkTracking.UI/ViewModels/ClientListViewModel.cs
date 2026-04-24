@@ -7,13 +7,16 @@ using WorkTracking.UI.Services;
 
 namespace WorkTracking.UI.ViewModels;
 
-public class ClientListViewModel(IClientRepository clientRepository, IDialogService dialogService) : ViewModelBase
+public class ClientListViewModel(
+    IClientRepository clientRepository,
+    IWorkEntryRepository workEntryRepository,
+    IDialogService dialogService) : ViewModelBase
 {
-    private ObservableCollection<Client> _clients = [];
-    private Client? _selectedClient;
+    private ObservableCollection<ClientRowViewModel> _clients = [];
+    private ClientRowViewModel? _selectedRow;
     private string _searchText = string.Empty;
 
-    public ObservableCollection<Client> Clients
+    public ObservableCollection<ClientRowViewModel> Clients
     {
         get => _clients;
         private set
@@ -25,10 +28,22 @@ public class ClientListViewModel(IClientRepository clientRepository, IDialogServ
 
     public bool HasClients => _clients.Count > 0;
 
+    public ClientRowViewModel? SelectedRow
+    {
+        get => _selectedRow;
+        set
+        {
+            if (SetField(ref _selectedRow, value))
+                OnPropertyChanged(nameof(SelectedClient));
+        }
+    }
+
     public Client? SelectedClient
     {
-        get => _selectedClient;
-        set => SetField(ref _selectedClient, value);
+        get => _selectedRow?.Client;
+        set => SelectedRow = value is null ? null
+            : _allClients.FirstOrDefault(r => r.Client.Id == value.Id)
+              ?? new ClientRowViewModel(value, 0);
     }
 
     public string SearchText
@@ -57,25 +72,31 @@ public class ClientListViewModel(IClientRepository clientRepository, IDialogServ
         };
         var added = await clientRepository.AddAsync(client);
         await LoadAsync();
-        SelectedClient = _allClients.FirstOrDefault(c => c.Id == added.Id);
+        SelectedClient = _allClients.FirstOrDefault(r => r.Client.Id == added.Id)?.Client;
     });
 
     public ICommand DeleteClientCommand => new RelayCommand(
         async _ =>
         {
-            if (_selectedClient is null) return;
-            if (!dialogService.Confirm($"Delete client '{_selectedClient.Name}'? This cannot be undone.", "Delete Client"))
+            if (SelectedClient is null) return;
+            if (!dialogService.Confirm($"Delete client '{SelectedClient.Name}'? This cannot be undone.", "Delete Client"))
                 return;
-            await clientRepository.DeleteAsync(_selectedClient.Id);
+            await clientRepository.DeleteAsync(SelectedClient.Id);
             await LoadAsync();
         },
-        _ => _selectedClient is not null);
+        _ => SelectedClient is not null);
 
-    private List<Client> _allClients = [];
+    private List<ClientRowViewModel> _allClients = [];
 
     public async Task LoadAsync()
     {
-        _allClients = [.. await clientRepository.GetAllAsync()];
+        var clients = await clientRepository.GetAllAsync();
+        var hoursByClient = await workEntryRepository.GetUninvoicedHoursByClientAsync();
+
+        _allClients = clients
+            .Select(c => new ClientRowViewModel(c, hoursByClient.GetValueOrDefault(c.Id)))
+            .ToList();
+
         ApplyFilter();
     }
 
@@ -83,7 +104,7 @@ public class ClientListViewModel(IClientRepository clientRepository, IDialogServ
     {
         var filtered = string.IsNullOrWhiteSpace(SearchText)
             ? _allClients
-            : _allClients.Where(c => c.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
+            : _allClients.Where(r => r.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
 
         Clients = [.. filtered];
     }

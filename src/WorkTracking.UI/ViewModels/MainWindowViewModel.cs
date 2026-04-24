@@ -18,6 +18,12 @@ public class MainWindowViewModel(
             if (e.PropertyName == nameof(ClientListViewModel.SelectedClient))
                 OnSelectedClientChanged(ClientList.SelectedClient);
         };
+
+        ClientDetail.Settings.ClientUpdated += async (_, updatedClient) =>
+        {
+            await ClientList.LoadAsync();
+            ClientList.SelectedClient = updatedClient;
+        };
     }
 
     private void OnSelectedClientChanged(Client? client)
