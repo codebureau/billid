@@ -35,21 +35,21 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Date *" VerticalAlignment="Center" Margin="0,0,0,10"/>
             <DatePicker Grid.Row="0" Grid.Column="1"
                         SelectedDate="{Binding Date}"
-                        IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBoolConverter}}"
+                        TabIndex="0" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBoolConverter}}"
                         Margin="0,0,0,10"/>
 
             <!-- Description -->
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Description *" VerticalAlignment="Center" Margin="0,0,0,10"/>
             <TextBox   Grid.Row="1" Grid.Column="1"
                        Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                       IsReadOnly="{Binding IsReadOnly}"
+                       TabIndex="1" IsReadOnly="{Binding IsReadOnly}"
                        Margin="0,0,0,10"/>
 
             <!-- Hours -->
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Hours *" VerticalAlignment="Center" Margin="0,0,0,10"/>
             <TextBox   Grid.Row="2" Grid.Column="1"
                        Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged}"
-                       IsReadOnly="{Binding IsReadOnly}"
+                       TabIndex="2" IsReadOnly="{Binding IsReadOnly}"
                        Margin="0,0,0,10"/>
 
             <!-- Category -->
@@ -57,7 +57,7 @@
             <ComboBox  Grid.Row="3" Grid.Column="1"
                        ItemsSource="{Binding Categories}"
                        SelectedItem="{Binding SelectedCategory}"
-                       IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBoolConverter}}"
+                       TabIndex="3" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBoolConverter}}"
                        DisplayMemberPath="Name"
                        Margin="0,0,0,10"/>
 
@@ -65,17 +65,17 @@
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Notes" VerticalAlignment="Top" Margin="0,4,0,0"/>
             <TextBox   Grid.Row="4" Grid.Column="1"
                        Text="{Binding NotesMarkdown, UpdateSourceTrigger=PropertyChanged}"
-                       IsReadOnly="{Binding IsReadOnly}"
+                       TabIndex="4" IsReadOnly="{Binding IsReadOnly}"
                        AcceptsReturn="True" MinHeight="70" TextWrapping="Wrap"
                        VerticalScrollBarVisibility="Auto"/>
         </Grid>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
             <!-- Read-only mode: single Close button -->
-            <Button Content="Close" Command="{Binding CancelCommand}" Width="80" IsDefault="True"
+            <Button Content="Close" Command="{Binding CancelCommand}" Width="80" IsDefault="True" IsCancel="True"
                     Visibility="{Binding IsReadOnly, Converter={StaticResource BoolToVisibilityConverter}}"/>
             <!-- Edit/Add mode: Cancel + Save -->
-            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="80" Margin="0,0,8,0"
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="80" IsCancel="True" Margin="0,0,8,0"
                     Visibility="{Binding IsReadOnly, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
             <Button Content="{Binding Title}" Command="{Binding ConfirmCommand}" Width="110"
                     IsDefault="True"
