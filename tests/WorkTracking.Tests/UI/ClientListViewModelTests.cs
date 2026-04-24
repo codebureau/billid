@@ -23,8 +23,15 @@ public class ClientListViewModelTests
         return mock;
     }
 
-    private static ClientListViewModel MakeVm(List<Client> clients) =>
-        new(RepoWith(clients).Object, new Mock<IDialogService>().Object);
+    private static Mock<IWorkEntryRepository> WorkEntryRepoWithHours(Dictionary<int, decimal>? hours = null)
+    {
+        var mock = new Mock<IWorkEntryRepository>();
+        mock.Setup(r => r.GetUninvoicedHoursByClientAsync()).ReturnsAsync(hours ?? []);
+        return mock;
+    }
+
+    private static ClientListViewModel MakeVm(List<Client> clients, Dictionary<int, decimal>? hours = null) =>
+        new(RepoWith(clients).Object, WorkEntryRepoWithHours(hours).Object, new Mock<IDialogService>().Object);
 
     [Fact]
     public async Task LoadAsync_WithClients_PopulatesClients()
@@ -87,11 +94,93 @@ public class ClientListViewModelTests
         await vm.LoadAsync();
         var raised = new List<string?>();
         vm.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
-        var client = vm.Clients[0];
+        var row = vm.Clients[0];
 
-        vm.SelectedClient = client;
+        vm.SelectedClient = row.Client;
 
-        vm.SelectedClient.Should().Be(client);
+        vm.SelectedClient.Should().Be(row.Client);
         raised.Should().Contain(nameof(ClientListViewModel.SelectedClient));
+    }
+
+    [Fact]
+    public async Task IsCapExceeded_WhenUninvoicedTotalExceedsCap_IsTrue()
+    {
+        var clients = new List<Client>
+        {
+            new() { Id = 1, Name = "CapClient", HourlyRate = 100, InvoiceCapAmount = 500 }
+        };
+        // 6 hours * $100 = $600 > $500 cap
+        var vm = MakeVm(clients, new Dictionary<int, decimal> { [1] = 6m });
+        await vm.LoadAsync();
+
+        vm.Clients[0].IsCapExceeded.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task IsCapExceeded_WhenUninvoicedTotalUnderCap_IsFalse()
+    {
+        var clients = new List<Client>
+        {
+            new() { Id = 1, Name = "CapClient", HourlyRate = 100, InvoiceCapAmount = 500 }
+        };
+        // 4 hours * $100 = $400 < $500 cap
+        var vm = MakeVm(clients, new Dictionary<int, decimal> { [1] = 4m });
+        await vm.LoadAsync();
+
+        vm.Clients[0].IsCapExceeded.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task IsCapExceeded_WhenNoCap_IsFalse()
+    {
+        var clients = new List<Client>
+        {
+            new() { Id = 1, Name = "NoCap", HourlyRate = 100, InvoiceCapAmount = null }
+        };
+        var vm = MakeVm(clients, new Dictionary<int, decimal> { [1] = 100m });
+        await vm.LoadAsync();
+
+        vm.Clients[0].IsCapExceeded.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task IsInvoiceOverdue_WhenNextDueDateInPast_IsTrue()
+    {
+        var clients = new List<Client>
+        {
+            new() { Id = 1, Name = "OverdueClient", HourlyRate = 100,
+                NextInvoiceDueDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1)) }
+        };
+        var vm = MakeVm(clients);
+        await vm.LoadAsync();
+
+        vm.Clients[0].IsInvoiceOverdue.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task IsInvoiceOverdue_WhenNextDueDateInFuture_IsFalse()
+    {
+        var clients = new List<Client>
+        {
+            new() { Id = 1, Name = "OnTrackClient", HourlyRate = 100,
+                NextInvoiceDueDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7)) }
+        };
+        var vm = MakeVm(clients);
+        await vm.LoadAsync();
+
+        vm.Clients[0].IsInvoiceOverdue.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task IsInvoiceOverdue_WhenNoNextDueDate_IsFalse()
+    {
+        var clients = new List<Client>
+        {
+            new() { Id = 1, Name = "NoFreqClient", HourlyRate = 100, NextInvoiceDueDate = null }
+        };
+        var vm = MakeVm(clients);
+        await vm.LoadAsync();
+
+        vm.Clients[0].IsInvoiceOverdue.Should().BeFalse();
     }
 }

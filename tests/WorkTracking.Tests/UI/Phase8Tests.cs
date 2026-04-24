@@ -15,7 +15,9 @@ public class ClientListViewModelEmptyStateTests
     {
         var repo = new Mock<IClientRepository>();
         repo.Setup(r => r.GetAllAsync()).ReturnsAsync(clients);
-        return new ClientListViewModel(repo.Object, new Mock<IDialogService>().Object);
+        var workEntryMock = new Mock<IWorkEntryRepository>();
+        workEntryMock.Setup(r => r.GetUninvoicedHoursByClientAsync()).ReturnsAsync(new Dictionary<int, decimal>());
+        return new ClientListViewModel(repo.Object, workEntryMock.Object, new Mock<IDialogService>().Object);
     }
 
     [Fact]
@@ -200,7 +202,7 @@ public class WorkEntryRowViewModelMonthLabelTests
 }
 
 
-// -- WorkEntryRowViewModel — IsInvoiced is read-only --------------------------
+// -- WorkEntryRowViewModel ï¿½ IsInvoiced is read-only --------------------------
 // Regression: WPF DataGridCheckBoxColumn binds TwoWay by default, which throws
 // InvalidOperationException when the property has no setter. IsInvoiced must
 // remain a computed read-only property (no public setter).

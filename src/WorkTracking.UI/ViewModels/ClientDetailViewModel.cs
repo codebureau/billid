@@ -48,6 +48,8 @@ public class ClientDetailViewModel(
         {
             Client = updatedClient;
             OnPropertyChanged(nameof(HasClient));
+            _ = Timesheet.LoadAsync(updatedClient.Id, updatedClient.HourlyRate, updatedClient.InvoiceCapAmount);
+            _ = Summary.LoadAsync(updatedClient);
         };
     }
 

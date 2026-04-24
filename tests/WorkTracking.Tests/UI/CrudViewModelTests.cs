@@ -61,8 +61,12 @@ public class ClientListViewModelCrudTests
 {
     private static ClientListViewModel MakeVm(
         Mock<IClientRepository> repo,
-        Mock<IDialogService> dialog) =>
-        new(repo.Object, dialog.Object);
+        Mock<IDialogService> dialog)
+    {
+        var workEntryMock = new Mock<IWorkEntryRepository>();
+        workEntryMock.Setup(r => r.GetUninvoicedHoursByClientAsync()).ReturnsAsync(new Dictionary<int, decimal>());
+        return new(repo.Object, workEntryMock.Object, dialog.Object);
+    }
 
     [Fact]
     public async Task AddClientCommand_WhenDialogConfirmed_AddsAndReloads()
