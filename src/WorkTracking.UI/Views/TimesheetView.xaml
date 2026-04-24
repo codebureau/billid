@@ -1,4 +1,4 @@
-<UserControl x:Class="WorkTracking.UI.Views.TimesheetView"
+﻿<UserControl x:Class="WorkTracking.UI.Views.TimesheetView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -67,6 +67,8 @@
                 <Button Content="✏ Edit" Command="{Binding EditEntryCommand}"
                         Margin="0,0,4,0" Padding="7,2" FontSize="11"/>
                 <Button Content="🗑 Delete" Command="{Binding DeleteEntryCommand}"
+                        Margin="0,0,4,0" Padding="7,2" FontSize="11"/>
+                <Button Content="👁 View" Command="{Binding ViewEntryCommand}"
                         Padding="7,2" FontSize="11"/>
 
                 <Separator Width="1" Height="18" Margin="10,0" Background="#CCC"/>
@@ -98,6 +100,15 @@
                       GridLinesVisibility="Horizontal"
                       HeadersVisibility="Column"
                       BorderThickness="0">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInvoiced}" Value="True">
+                                <Setter Property="Foreground" Value="Gray"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>

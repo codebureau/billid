@@ -269,3 +269,115 @@ public class TimesheetViewModelDeleteConfirmTests
         dialogService.Verify(d => d.Confirm(It.Is<string>(m => m.Contains("Test entry")), It.IsAny<string>()), Times.Once);
     }
 }
+
+// -- Issue #4: Lock invoiced entries from edit/delete -------------------------
+
+public class TimesheetViewModelInvoicedLockTests
+{
+    private static (TimesheetViewModel vm, Mock<IWorkEntryRepository> entryRepo, Mock<IDialogService> dialogService) MakeVm()
+    {
+        var entryRepo = new Mock<IWorkEntryRepository>();
+        var categoryRepo = new Mock<IWorkCategoryRepository>();
+        var invoiceRepo = new Mock<IInvoiceRepository>();
+        var dialogService = new Mock<IDialogService>();
+        categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
+        entryRepo.Setup(r => r.GetFilteredAsync(It.IsAny<int>(), null, null, false, null))
+                 .ReturnsAsync([]);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        return (vm, entryRepo, dialogService);
+    }
+
+    private static WorkEntry MakeEntry(int id, bool invoiced = false) => new()
+    {
+        Id = id, ClientId = 1,
+        Date = DateOnly.FromDateTime(DateTime.Today),
+        Description = "Test entry", Hours = 1m,
+        InvoicedFlag = invoiced
+    };
+
+    [Fact]
+    public async Task EditEntryCommand_WhenEntryIsInvoiced_CanExecuteReturnsFalse()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: true), null);
+
+        vm.EditEntryCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task EditEntryCommand_WhenEntryIsUninvoiced_CanExecuteReturnsTrue()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: false), null);
+
+        vm.EditEntryCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteEntryCommand_WhenEntryIsInvoiced_CanExecuteReturnsFalse()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: true), null);
+
+        vm.DeleteEntryCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task DeleteEntryCommand_WhenEntryIsUninvoiced_CanExecuteReturnsTrue()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: false), null);
+
+        vm.DeleteEntryCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ViewEntryCommand_WhenNoEntrySelected_CanExecuteReturnsFalse()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+
+        vm.ViewEntryCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ViewEntryCommand_WhenUninvoicedEntrySelected_CanExecuteReturnsTrue()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: false), null);
+
+        vm.ViewEntryCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ViewEntryCommand_WhenInvoicedEntrySelected_CanExecuteReturnsTrue()
+    {
+        var (vm, _, _) = MakeVm();
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: true), null);
+
+        vm.ViewEntryCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ViewEntryCommand_WhenExecuted_OpensDialogInReadOnlyMode()
+    {
+        var (vm, _, dialogService) = MakeVm();
+        WorkEntryDialogViewModel? capturedVm = null;
+        dialogService.Setup(d => d.ShowWorkEntryDialog(It.IsAny<WorkEntryDialogViewModel>()))
+                     .Callback<WorkEntryDialogViewModel>(v => capturedVm = v)
+                     .Returns(false);
+
+        await vm.LoadAsync(1, 100m, null);
+        vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: true), null);
+        vm.ViewEntryCommand.Execute(null);
+
+        capturedVm.Should().NotBeNull();
+        capturedVm!.IsReadOnly.Should().BeTrue();
+    }
+}

@@ -13,10 +13,11 @@ public class WorkEntryDialogViewModel : ViewModelBase
     private string? _notesMarkdown;
     private bool _confirmed;
 
-    public WorkEntryDialogViewModel(IReadOnlyList<WorkCategory> categories, WorkEntry? existing = null)
+    public WorkEntryDialogViewModel(IReadOnlyList<WorkCategory> categories, WorkEntry? existing = null, bool isReadOnly = false)
     {
         Categories = categories;
         IsEdit = existing is not null;
+        IsReadOnly = isReadOnly;
 
         if (existing is not null)
         {
@@ -30,15 +31,16 @@ public class WorkEntryDialogViewModel : ViewModelBase
 
         ConfirmCommand = new RelayCommand(
             _ => { _confirmed = true; CloseRequested?.Invoke(this, EventArgs.Empty); },
-            _ => !string.IsNullOrWhiteSpace(_description) && _hours > 0);
+            _ => !IsReadOnly && !string.IsNullOrWhiteSpace(_description) && _hours > 0);
 
         CancelCommand = new RelayCommand(
             _ => CloseRequested?.Invoke(this, EventArgs.Empty));
     }
 
     public bool IsEdit { get; }
+    public bool IsReadOnly { get; }
     public int ExistingId { get; }
-    public string Title => IsEdit ? "Edit Work Entry" : "Add Work Entry";
+    public string Title => IsReadOnly ? "View Work Entry" : (IsEdit ? "Edit Work Entry" : "Add Work Entry");
     public IReadOnlyList<WorkCategory> Categories { get; }
 
     public DateTime Date

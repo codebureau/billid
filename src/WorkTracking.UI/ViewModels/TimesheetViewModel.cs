@@ -342,6 +342,16 @@ public class TimesheetViewModel(
         },
         _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced);
 
+    public ICommand ViewEntryCommand => new RelayCommand(
+        _ =>
+        {
+            if (_selectedEntry is null) return;
+            var enabledCategories = CategoriesWithAll.Skip(1).ToList();
+            var vm = new WorkEntryDialogViewModel(enabledCategories, _selectedEntry.Entry, isReadOnly: true);
+            dialogService.ShowWorkEntryDialog(vm);
+        },
+        _ => _selectedEntry is not null);
+
     public event EventHandler? InvoiceCreated;
 
     // --- Data loading ---
