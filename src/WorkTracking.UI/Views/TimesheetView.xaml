@@ -106,8 +106,9 @@
                       HeadersVisibility="Column"
                       BorderThickness="0">
                 <DataGrid.InputBindings>
-                    <KeyBinding Key="Enter" Command="{Binding AddEntryCommand}"/>
-                    <KeyBinding Key="F2" Command="{Binding AddEntryCommand}"/>
+                    <KeyBinding Key="Insert" Command="{Binding AddEntryCommand}"/>
+                    <KeyBinding Key="F2" Command="{Binding EditEntryCommand}"/>
+                    <KeyBinding Key="Delete" Command="{Binding DeleteEntryCommand}"/>
                 </DataGrid.InputBindings>
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
