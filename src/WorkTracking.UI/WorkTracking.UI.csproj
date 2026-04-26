@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Resource Include="app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WorkTracking.Core\WorkTracking.Core.csproj" />
     <ProjectReference Include="..\WorkTracking.Data\WorkTracking.Data.csproj" />
   </ItemGroup>
