@@ -25,61 +25,90 @@
         </Grid.RowDefinitions>
 
         <!-- TOOLBAR -->
-        <Border Grid.Row="0" BorderBrush="#DDD" BorderThickness="0,0,0,1"
-                Padding="8,6" Background="#FAFAFA">
+        <Border Grid.Row="0" Style="{StaticResource ToolbarPanel}">
             <WrapPanel>
                 <TextBlock Text="Period:" VerticalAlignment="Center"
-                           Margin="0,0,4,0" Foreground="Gray" FontSize="11"/>
+                           Margin="0,0,4,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
                 <Button Content="This Month" Command="{Binding FilterThisMonthCommand}"
-                        Margin="0,0,3,0" Padding="6,2" FontSize="11"/>
+                        Style="{StaticResource ToolbarButton}" Margin="0,0,3,0"/>
                 <Button Content="Last Month" Command="{Binding FilterLastMonthCommand}"
-                        Margin="0,0,3,0" Padding="6,2" FontSize="11"/>
+                        Style="{StaticResource ToolbarButton}" Margin="0,0,3,0"/>
                 <Button Content="This Year" Command="{Binding FilterThisYearCommand}"
-                        Margin="0,0,3,0" Padding="6,2" FontSize="11"/>
+                        Style="{StaticResource ToolbarButton}" Margin="0,0,3,0"/>
                 <Button Content="All Time" Command="{Binding FilterAllTimeCommand}"
-                        Margin="0,0,10,0" Padding="6,2" FontSize="11"/>
+                        Style="{StaticResource ToolbarButton}" Margin="0,0,10,0"/>
 
                 <TextBlock Text="From:" VerticalAlignment="Center"
-                           Margin="0,0,4,0" Foreground="Gray" FontSize="11"/>
+                           Margin="0,0,4,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
                 <DatePicker SelectedDate="{Binding FilterStartDate, UpdateSourceTrigger=PropertyChanged}"
                             Width="120" Margin="0,0,6,0"/>
                 <TextBlock Text="To:" VerticalAlignment="Center"
-                           Margin="0,0,4,0" Foreground="Gray" FontSize="11"/>
+                           Margin="0,0,4,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
                 <DatePicker SelectedDate="{Binding FilterEndDate, UpdateSourceTrigger=PropertyChanged}"
                             Width="120" Margin="0,0,10,0"/>
 
                 <TextBlock Text="Show:" VerticalAlignment="Center"
-                           Margin="0,0,4,0" Foreground="Gray" FontSize="11"/>
+                           Margin="0,0,4,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
                 <ComboBox ItemsSource="{Binding InvoicedFilterOptions}"
                           SelectedItem="{Binding InvoicedFilterText}"
                           Width="100" Margin="0,0,10,0"/>
 
                 <TextBlock Text="Category:" VerticalAlignment="Center"
-                           Margin="0,0,4,0" Foreground="Gray" FontSize="11"/>
+                           Margin="0,0,4,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
                 <ComboBox Width="150" Margin="0,0,10,0"
                           ItemsSource="{Binding CategoriesWithAll}"
                           DisplayMemberPath="Name"
                           SelectedItem="{Binding SelectedFilterCategory}"/>
 
-                <ToggleButton Content="📝 Notes" IsChecked="{Binding IsNotesOpen}"
-                              Padding="6,2" FontSize="11"/>
+                <ToggleButton IsChecked="{Binding IsNotesOpen}"
+                              Style="{StaticResource ToolbarToggleButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource IconNotes}" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                              Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Notes" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ToggleButton>
 
-                <Separator Width="1" Height="18" Margin="10,0" Background="#CCC"/>
+                <Separator Width="1" Height="18" Margin="10,0" Background="{StaticResource BorderBrush}"/>
 
-                <Button Content="+ Add Entry" Command="{Binding AddEntryCommand}"
-                        Margin="0,0,6,0" Padding="12,4" FontSize="12" FontWeight="SemiBold"
-                        Background="#0078D4" Foreground="White" BorderThickness="0"/>
-                <Button Content="✏ Edit" Command="{Binding EditEntryCommand}"
-                        Margin="0,0,4,0" Padding="7,2" FontSize="11"/>
-                <Button Content="🗑 Delete" Command="{Binding DeleteEntryCommand}"
-                        Margin="0,0,4,0" Padding="7,2" FontSize="11"/>
-                <Button Content="👁 View" Command="{Binding ViewEntryCommand}"
-                        Padding="7,2" FontSize="11"/>
+                <Button Command="{Binding AddEntryCommand}"
+                        Style="{StaticResource PrimaryButton}"
+                        Margin="0,0,6,0" Padding="10,5">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource IconAdd}" Fill="White"
+                              Width="12" Height="12" Stretch="Uniform" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Add Entry" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding EditEntryCommand}"
+                        Style="{StaticResource ToolbarButton}" Margin="0,0,4,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource IconEdit}" Fill="{StaticResource TextPrimaryBrush}"
+                              Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Edit" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding DeleteEntryCommand}"
+                        Style="{StaticResource ToolbarButton}" Margin="0,0,4,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource IconDelete}" Fill="{StaticResource TextPrimaryBrush}"
+                              Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Delete" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ViewEntryCommand}"
+                        Style="{StaticResource ToolbarButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource IconView}" Fill="{StaticResource TextPrimaryBrush}"
+                              Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="View" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-                <Separator Width="1" Height="18" Margin="10,0" Background="#CCC"/>
+                <Separator Width="1" Height="18" Margin="10,0" Background="{StaticResource BorderBrush}"/>
 
                 <TextBlock Text="Group:" VerticalAlignment="Center"
-                           Margin="0,0,4,0" Foreground="Gray" FontSize="11"/>
+                           Margin="0,0,4,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
                 <ComboBox ItemsSource="{Binding GroupByOptions}"
                           SelectedItem="{Binding SelectedGroupBy}"
                           Width="110" FontSize="11"/>
@@ -157,7 +186,7 @@
 
             <!-- NOTES DRAWER -->
             <Border Grid.Column="1"
-                    BorderBrush="#DDD" BorderThickness="1,0,0,0"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,0,0,0"
                     Visibility="{Binding IsNotesOpen, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DockPanel Margin="10">
                     <TextBlock DockPanel.Dock="Top" Text="Notes"
@@ -165,7 +194,7 @@
 
                     <TextBlock DockPanel.Dock="Top"
                                Text="Select a row to view notes."
-                               Foreground="Gray" FontStyle="Italic"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic"
                                Visibility="{Binding HasSelectedEntry,
                                    Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
 
@@ -180,22 +209,23 @@
                                FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
                     <TextBlock DockPanel.Dock="Top"
                                Text="No attachments."
-                               Foreground="Gray" FontStyle="Italic" FontSize="11"/>
+                               Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic" FontSize="11"/>
                 </DockPanel>
             </Border>
         </Grid>
 
         <!-- FOOTER -->
-        <Border Grid.Row="2" Background="#F5F5F5"
-                BorderBrush="#DDD" BorderThickness="0,1,0,0" Padding="12,6">
+        <Border Grid.Row="2" Background="{StaticResource BackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="12,6">
             <DockPanel>
                 <Button DockPanel.Dock="Right"
-                        Content="Prepare Invoice…"
+                        Content="Prepare Invoice&#x2026;"
                         Command="{Binding PrepareInvoiceCommand}"
-                        Padding="10,4" FontSize="12"/>
+                        Style="{StaticResource PrimaryButton}"
+                        Padding="10,5"/>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Uninvoiced total: " Foreground="Gray" FontSize="12"/>
+                    <TextBlock Text="Uninvoiced total: " Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
                     <TextBlock FontSize="12" FontWeight="SemiBold" Margin="0,0,4,0">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0:N1} hrs  ·  ${1:N2}">
@@ -214,7 +244,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Text="⚠ Over cap  " Foreground="DarkRed" FontSize="12"
+                    <TextBlock Text="&#x26A0; Over cap  " Foreground="DarkRed" FontSize="12"
                                Visibility="{Binding IsOverCap,
                                    Converter={StaticResource BoolToVisibilityConverter}}"/>
 
@@ -228,8 +258,8 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
                                     <TextBlock Text="{Binding CategoryName}"
-                                               Foreground="Gray" FontSize="11"/>
-                                    <TextBlock Text=": " Foreground="Gray" FontSize="11"/>
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
+                                    <TextBlock Text=": " Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
                                     <TextBlock Text="{Binding Hours, StringFormat='{}{0:N1} hrs'}"
                                                FontSize="11"/>
                                 </StackPanel>

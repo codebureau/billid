@@ -4,7 +4,18 @@
              xmlns:converters="clr-namespace:WorkTracking.UI.Converters"
              Startup="OnStartup">
     <Application.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/ModernTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+
+            <!-- Implicit TextBlock font only — no Foreground here so buttons/tabs can inherit it -->
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource AppFont}"/>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
