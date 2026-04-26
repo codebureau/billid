@@ -12,10 +12,9 @@
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
 
-            <!-- Implicit TextBlock font -->
+            <!-- Implicit TextBlock font only — no Foreground here so buttons/tabs can inherit it -->
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource AppFont}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
