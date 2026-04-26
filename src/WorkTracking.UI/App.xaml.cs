@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,20 +24,24 @@ public partial class App : Application
 
     private async void OnStartup(object sender, StartupEventArgs e)
     {
-        var services = new ServiceCollection();
+        var splash = new SplashWindow();
+        splash.Show();
 
+        var services = new ServiceCollection();
         services.AddLogging(b => b.AddConsole().SetMinimumLevel(LogLevel.Information));
         services.AddWorkTrackingServices();
-
         _serviceProvider = services.BuildServiceProvider();
 
-        var initializer = _serviceProvider.GetRequiredService<SchemaInitializer>();
-        await initializer.InitializeAsync();
+        // Run DB init and a minimum display time concurrently
+        var initTask = _serviceProvider.GetRequiredService<SchemaInitializer>().InitializeAsync();
+        await Task.WhenAll(initTask, Task.Delay(2000));
 
         var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
         var vm = _serviceProvider.GetRequiredService<MainWindowViewModel>();
         mainWindow.DataContext = vm;
         mainWindow.Show();
+
+        splash.Close();
 
         await vm.InitializeAsync();
     }
