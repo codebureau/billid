@@ -38,24 +38,28 @@
                      Margin="8,0,8,6"
                      Padding="4"
                      x:Name="SearchBox"/>
-            <ListBox ItemsSource="{Binding ClientList.Clients}"
-                     SelectedItem="{Binding ClientList.SelectedRow}"
-                     BorderThickness="0"
-                     Background="Transparent">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="4,3">
-                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding CompanyName}" FontSize="11" Foreground="Gray"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBlock Text="No clients yet — click + Add to get started."
-                       Foreground="Gray" FontSize="11" FontStyle="Italic"
-                       TextWrapping="Wrap" Margin="10,8"
-                       Visibility="{Binding ClientList.HasClients,
-                           Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+            <!-- Grid as last DockPanel child → fills remaining width AND height correctly -->
+            <Grid>
+                <ListBox ItemsSource="{Binding ClientList.Clients}"
+                         SelectedItem="{Binding ClientList.SelectedRow}"
+                         BorderThickness="0"
+                         Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="4,3">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding CompanyName}" FontSize="11" Foreground="Gray"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock Text="No clients yet — click + Add to get started."
+                           Foreground="Gray" FontSize="11" FontStyle="Italic"
+                           TextWrapping="Wrap" Margin="10,8"
+                           HorizontalAlignment="Center" VerticalAlignment="Top"
+                           Visibility="{Binding ClientList.HasClients,
+                               Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+            </Grid>
         </DockPanel>
 
         <!-- Splitter -->
