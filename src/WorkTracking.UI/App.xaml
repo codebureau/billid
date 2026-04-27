@@ -1,4 +1,4 @@
-﻿<Application x:Class="WorkTracking.UI.App"
+<Application x:Class="WorkTracking.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:WorkTracking.UI.Converters"
@@ -11,8 +11,8 @@
 
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+            <converters:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
 
-            <!-- Implicit TextBlock font only — no Foreground here so buttons/tabs can inherit it -->
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource AppFont}"/>
             </Style>

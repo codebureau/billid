@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="WorkTracking.UI.Views.ClientSettingsView"
+<UserControl x:Class="WorkTracking.UI.Views.ClientSettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -100,7 +100,7 @@
             <!-- Work categories -->
             <TextBlock Text="Work Categories" Style="{StaticResource SectionHeader}" Margin="0,16,0,6"/>
             <TextBlock Text="Only enabled categories appear in the timesheet filter and entry form."
-                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,10"/>
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,10"/>
 
             <ItemsControl ItemsSource="{Binding Categories}">
                 <ItemsControl.ItemTemplate>
@@ -129,7 +129,7 @@
                         Command="{Binding SaveCommand}"
                         Style="{StaticResource PrimaryButton}"
                         Padding="14,6" Margin="0,0,10,0"/>
-                <TextBlock Text="Saving&#x2026;" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}">
+                <TextBlock Text="Saving&#x2026;" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Collapsed"/>
