@@ -60,6 +60,14 @@ public class MainWindowViewModelTests
     }
 
     private static ClientDetailViewModel MakeDetailVm() => new(MakeTimesheetVm(), MakeInvoicesVm(), MakeSummaryVm(), MakeSettingsVm());
+    private static AppSettingsViewModel MakeAppSettingsVm()
+    {
+        var themeService = new Mock<IThemeService>();
+        themeService.SetupGet(t => t.CurrentTheme).Returns(AppTheme.Light);
+        var settingRepo = new Mock<ISettingRepository>();
+        settingRepo.Setup(r => r.GetAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        return new AppSettingsViewModel(themeService.Object, settingRepo.Object);
+    }
     private static HomeViewModel MakeHomeVm()
     {
         var clientRepo = new Mock<IClientRepository>();
@@ -78,7 +86,7 @@ public class MainWindowViewModelTests
         var clients = new List<Client> { new() { Id = 1, Name = "Acme" } };
         var listVm = MakeClientListVm(clients);
         var detailVm = MakeDetailVm();
-        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm());
+        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm(), MakeAppSettingsVm());
 
         await vm.InitializeAsync();
 
@@ -91,7 +99,7 @@ public class MainWindowViewModelTests
         var client = new Client { Id = 1, Name = "Acme" };
         var listVm = MakeClientListVm([client]);
         var detailVm = MakeDetailVm();
-        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm());
+        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm(), MakeAppSettingsVm());
         await vm.InitializeAsync();
 
         listVm.SelectedClient = client;
@@ -106,7 +114,7 @@ public class MainWindowViewModelTests
         var client = new Client { Id = 1, Name = "Acme" };
         var listVm = MakeClientListVm([client]);
         var detailVm = MakeDetailVm();
-        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm());
+        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm(), MakeAppSettingsVm());
         await vm.InitializeAsync();
         listVm.SelectedClient = client;
 
@@ -120,7 +128,7 @@ public class MainWindowViewModelTests
     {
         var listVm = MakeClientListVm([]);
         var detailVm = MakeDetailVm();
-        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm());
+        var vm = new MainWindowViewModel(listVm, detailVm, MakeHomeVm(), MakeAppSettingsVm());
 
         await vm.InitializeAsync();
 

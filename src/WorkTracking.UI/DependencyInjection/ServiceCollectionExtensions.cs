@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
         // Services (Singleton)
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<IThemeService, ThemeService>();
 
         // ViewModels (Transient)
         services.AddTransient<TimesheetViewModel>();
@@ -36,6 +37,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ClientListViewModel>();
         services.AddTransient<ClientDetailViewModel>();
         services.AddTransient<HomeViewModel>();
+        services.AddTransient<AppSettingsViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         // Main window (Singleton — one instance)

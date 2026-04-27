@@ -7,23 +7,31 @@ namespace WorkTracking.UI.ViewModels;
 public class MainWindowViewModel(
     ClientListViewModel clientListViewModel,
     ClientDetailViewModel clientDetailViewModel,
-    HomeViewModel homeViewModel) : ViewModelBase
+    HomeViewModel homeViewModel,
+    AppSettingsViewModel appSettingsViewModel) : ViewModelBase
 {
-    public ClientListViewModel ClientList { get; } = clientListViewModel;
+    public ClientListViewModel  ClientList    { get; } = clientListViewModel;
     public ClientDetailViewModel ClientDetail { get; } = clientDetailViewModel;
-    public HomeViewModel Home { get; } = homeViewModel;
+    public HomeViewModel         Home         { get; } = homeViewModel;
+    public AppSettingsViewModel  AppSettings  { get; } = appSettingsViewModel;
 
-    public bool ShowHome => ClientList.SelectedClient is null;
+    private bool _showSettings;
+
+    public bool ShowHome         => ClientList.SelectedClient is null && !_showSettings;
+    public bool ShowSettings     => _showSettings;
+    public bool ShowClientDetail => ClientList.SelectedClient is not null;
 
     public event EventHandler? ShowAboutRequested;
 
-    public ICommand ShowAboutCommand => new RelayCommand(_ => ShowAboutRequested?.Invoke(this, EventArgs.Empty));
-    public ICommand GoHomeCommand    => new RelayCommand(_ => ClientList.SelectedClient = null);
+    public ICommand ShowAboutCommand  => new RelayCommand(_ => ShowAboutRequested?.Invoke(this, EventArgs.Empty));
+    public ICommand GoHomeCommand     => new RelayCommand(_ => NavigateHome());
+    public ICommand GoSettingsCommand => new RelayCommand(_ => NavigateSettings());
 
     public async Task InitializeAsync()
     {
         await ClientList.LoadAsync();
         await Home.LoadAsync();
+        await AppSettings.LoadAsync();
 
         ClientList.PropertyChanged += (_, e) =>
         {
@@ -39,6 +47,20 @@ public class MainWindowViewModel(
         };
     }
 
+    private void NavigateHome()
+    {
+        _showSettings = false;
+        ClientList.SelectedClient = null;
+        NotifyPanelState();
+    }
+
+    private void NavigateSettings()
+    {
+        _showSettings = true;
+        ClientList.SelectedClient = null;
+        NotifyPanelState();
+    }
+
     private void OnSelectedClientChanged(Client? client)
     {
         if (client is null)
@@ -48,8 +70,16 @@ public class MainWindowViewModel(
         }
         else
         {
+            _showSettings = false;
             ClientDetail.LoadClient(client);
         }
+        NotifyPanelState();
+    }
+
+    private void NotifyPanelState()
+    {
         OnPropertyChanged(nameof(ShowHome));
+        OnPropertyChanged(nameof(ShowSettings));
+        OnPropertyChanged(nameof(ShowClientDetail));
     }
 }
