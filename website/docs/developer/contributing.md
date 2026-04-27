@@ -38,6 +38,12 @@ git push --set-upstream origin feat/42-my-feature
 gh pr create --title "feat: my feature (#42)" --base main
 ```
 
+## Releasing
+
+See the [Releasing guide](releasing.md) for the full tag-based release workflow.
+
+---
+
 ---
 
 ## Coding conventions
