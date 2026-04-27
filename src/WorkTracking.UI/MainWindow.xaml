@@ -33,6 +33,12 @@
                             Padding="8,4" FontSize="12"/>
                 </Grid>
             </Border>
+            <!-- About button pinned to the bottom -->
+            <Button DockPanel.Dock="Bottom"
+                    Content="About Billable"
+                    Command="{Binding ShowAboutCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Margin="8,4,8,8" FontSize="11"/>
             <TextBox DockPanel.Dock="Top"
                      Text="{Binding ClientList.SearchText, UpdateSourceTrigger=PropertyChanged}"
                      Margin="8,0,8,6"
@@ -67,29 +73,44 @@
                       HorizontalAlignment="Stretch"
                       Background="{StaticResource BorderBrush}"/>
 
-        <!-- Right: client detail -->
+        <!-- Right: client detail or home dashboard -->
         <Grid Grid.Column="2">
-            <!-- No client selected -->
-            <TextBlock Text="Select a client to get started."
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Foreground="Gray" FontSize="14"
-                       Visibility="{Binding ClientDetail.HasClient,
-                           Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+            <!-- Home dashboard (no client selected) -->
+            <Grid Visibility="{Binding ShowHome, Converter={StaticResource BoolToVisibilityConverter}}">
+                <views:HomeView DataContext="{Binding Home}"/>
+            </Grid>
 
             <!-- Client detail tabs -->
-            <DockPanel Visibility="{Binding ClientDetail.HasClient,
-                           Converter={StaticResource BoolToVisibilityConverter}}">
-                <Grid DockPanel.Dock="Top" Margin="16,14,16,6">
+            <DockPanel Visibility="{Binding ShowHome,
+                           Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                <Grid DockPanel.Dock="Top" Margin="16,10,16,6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0"
+
+                    <!-- Breadcrumb back link -->
+                    <Button Grid.Row="0" Grid.Column="0"
+                            Content="← Overview"
+                            Command="{Binding GoHomeCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            HorizontalAlignment="Left"
+                            Padding="0,0" FontSize="11"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            Foreground="{StaticResource TextSecondaryBrush}"
+                            Margin="0,0,0,2"/>
+
+                    <!-- Client name -->
+                    <TextBlock Grid.Row="1" Grid.Column="0"
                                Text="{Binding ClientDetail.Client.Name}"
                                FontSize="18" FontWeight="Bold"
                                VerticalAlignment="Center"/>
-                    <Button Grid.Column="1" Content="Delete client"
+                    <Button Grid.Row="1" Grid.Column="1" Content="Delete client"
                             Command="{Binding ClientList.DeleteClientCommand}"
                             Style="{StaticResource DangerButton}"/>
                 </Grid>
