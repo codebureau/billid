@@ -1,0 +1,76 @@
+site_name: Billable
+site_description: Local-first time tracking and invoicing for solo consultants
+site_url: https://codebureau.github.io/billable
+repo_url: https://github.com/codebureau/billable
+repo_name: codebureau/billable
+edit_uri: edit/main/website/docs/
+
+docs_dir: website/docs
+site_dir: website/site
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.png
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.action.edit
+    - content.code.copy
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+extra_css:
+  - assets/theme.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/codebureau/billable
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - User Guide:
+    - Overview: user-guide/index.md
+    - Clients: user-guide/clients.md
+    - Timesheet: user-guide/timesheet.md
+    - Invoices: user-guide/invoices.md
+    - Settings: user-guide/settings.md
+  - Developer:
+    - Architecture: developer/architecture.md
+    - Contributing: developer/contributing.md
+    - Keyboard Shortcuts: developer/keyboard-shortcuts.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - tables

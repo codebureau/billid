@@ -17,6 +17,20 @@
     <File Path="../docs/schema.sql" />
     <File Path="../docs/ui-spec.md" />
   </Folder>
+  <Folder Name="/website/">
+    <File Path="../mkdocs.yml" />
+    <File Path="../README.md" />
+    <File Path="../website/docs/index.md" />
+    <File Path="../website/docs/getting-started.md" />
+    <File Path="../website/docs/user-guide/index.md" />
+    <File Path="../website/docs/user-guide/clients.md" />
+    <File Path="../website/docs/user-guide/timesheet.md" />
+    <File Path="../website/docs/user-guide/invoices.md" />
+    <File Path="../website/docs/user-guide/settings.md" />
+    <File Path="../website/docs/developer/architecture.md" />
+    <File Path="../website/docs/developer/contributing.md" />
+    <File Path="../website/docs/developer/keyboard-shortcuts.md" />
+  </Folder>
   <Properties>
     <StartupProjects>
       <StartupProject Path="WorkTracking.UI/WorkTracking.UI.csproj" />
