@@ -16,6 +16,11 @@ public class DatabaseConnectionFactory(string connectionString) : IDatabaseConne
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Billable");
         Directory.CreateDirectory(folder);
-        return $"Data Source={Path.Combine(folder, "billable.db")}";
+#if DEBUG
+        const string dbName = "billable-dev.db";
+#else
+        const string dbName = "billable.db";
+#endif
+        return $"Data Source={Path.Combine(folder, dbName)}";
     }
 }
