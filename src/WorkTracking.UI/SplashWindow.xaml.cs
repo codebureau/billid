@@ -7,9 +7,14 @@ namespace WorkTracking.UI;
 
 public partial class SplashWindow : Window
 {
-    public SplashWindow()
+    private readonly bool _canClose;
+
+    public SplashWindow(bool canClose = false)
     {
         InitializeComponent();
+        _canClose = canClose;
+        CloseButton.Visibility = canClose ? Visibility.Visible : Visibility.Collapsed;
+
         var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion
                       ?? "dev";
         VersionText.Text = $"v{version}";
@@ -18,8 +23,12 @@ public partial class SplashWindow : Window
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         base.OnMouseLeftButtonDown(e);
-        Close();
+        // In splash mode (not About), any click closes the window
+        if (!_canClose)
+            Close();
     }
 
-    private void OnClick(object sender, MouseButtonEventArgs e) => Close();
+    private void OnBorderClick(object sender, MouseButtonEventArgs e) { /* handled by OnMouseLeftButtonDown */ }
+
+    private void OnClick(object sender, RoutedEventArgs e) => Close();
 }
