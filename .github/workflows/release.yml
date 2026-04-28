@@ -45,9 +45,24 @@ jobs:
           -p:AssemblyVersion=${{ steps.version.outputs.VERSION }}
           --output publish/
 
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk
+
+      - name: Pack installer
+        run: >
+          vpk pack
+          --packId Billable
+          --packVersion ${{ steps.version.outputs.VERSION }}
+          --packDir publish/
+          --mainExe billable.exe
+          --icon src/WorkTracking.UI/app.ico
+          --outputDir installer/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: publish/billable.exe
+          files: |
+            installer/BillableSetup.exe
+            installer/RELEASES.win.json
           generate_release_notes: true
           fail_on_unmatched_files: true

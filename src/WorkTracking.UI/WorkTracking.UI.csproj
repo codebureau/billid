@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -26,6 +27,10 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>billable</AssemblyName>
     <ApplicationIcon>app.ico</ApplicationIcon>
+    <Company>Codebureau</Company>
+    <Product>Billable</Product>
+    <Copyright>Copyright © Codebureau $([System.DateTime]::Now.Year)</Copyright>
+    <StartupObject>WorkTracking.UI.Program</StartupObject>
   </PropertyGroup>
 
 </Project>

@@ -15,6 +15,12 @@ public class MainWindowViewModel(
     public HomeViewModel         Home         { get; } = homeViewModel;
     public AppSettingsViewModel  AppSettings  { get; } = appSettingsViewModel;
 
+#if DEBUG
+    public string Title => "Billable [DEV]";
+#else
+    public string Title => "Billable";
+#endif
+
     private bool _showSettings;
 
     public bool ShowHome         => ClientList.SelectedClient is null && !_showSettings;
