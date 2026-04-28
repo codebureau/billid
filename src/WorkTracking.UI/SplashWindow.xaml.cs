@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -15,7 +14,10 @@ public partial class SplashWindow : Window
         _canClose = canClose;
         CloseButton.Visibility = canClose ? Visibility.Visible : Visibility.Collapsed;
 
-        var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion
+        var version = Assembly.GetExecutingAssembly()
+                          .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                          ?.InformationalVersion
+                          ?.Split('+')[0]
                       ?? "dev";
         VersionText.Text = $"v{version}";
     }
