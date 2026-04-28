@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Data;
 using System.Windows.Input;
 using Markdig;
@@ -14,6 +16,7 @@ public class TimesheetViewModel(
     IWorkEntryRepository workEntryRepository,
     IWorkCategoryRepository workCategoryRepository,
     IInvoiceRepository invoiceRepository,
+    IAttachmentRepository attachmentRepository,
     IDialogService dialogService) : ViewModelBase
 {
     private static readonly WorkCategory AllCategoriesSentinel = new() { Id = 0, Name = "All categories" };
@@ -33,6 +36,7 @@ public class TimesheetViewModel(
     private bool _isNotesOpen = true;
     private bool _isLoading;
     private string _selectedGroupBy = "None";
+    private ObservableCollection<Attachment> _selectedEntryAttachments = [];
 
     public ObservableCollection<WorkEntryRowViewModel> Entries
     {
@@ -71,10 +75,20 @@ public class TimesheetViewModel(
             OnPropertyChanged(nameof(CanEditSelectedEntry));
             OnPropertyChanged(nameof(EditOrViewButtonLabel));
             OnPropertyChanged(nameof(RenderedNotesHtml));
+            OnPropertyChanged(nameof(CanAddAttachment));
+            _ = LoadAttachmentsAsync();
         }
     }
 
     public bool HasSelectedEntry => _selectedEntry is not null;
+
+    public ObservableCollection<Attachment> SelectedEntryAttachments
+    {
+        get => _selectedEntryAttachments;
+        private set => SetField(ref _selectedEntryAttachments, value);
+    }
+
+    public bool CanAddAttachment => _selectedEntry is not null && !_selectedEntry.IsInvoiced;
 
     public WorkCategory SelectedFilterCategory
     {
@@ -361,6 +375,107 @@ public class TimesheetViewModel(
             dialogService.ShowWorkEntryDialog(vm);
         },
         _ => _selectedEntry is not null);
+
+    public ICommand AddAttachmentCommand => new RelayCommand(
+        async _ =>
+        {
+            if (_selectedEntry is null) return;
+
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Attach file",
+                Multiselect = true,
+                Filter = "All files (*.*)|*.*"
+            };
+            if (dialog.ShowDialog() != true) return;
+
+            foreach (var sourcePath in dialog.FileNames)
+                await AttachFileAsync(sourcePath);
+        },
+        _ => _selectedEntry is not null && !(_selectedEntry.IsInvoiced));
+
+    public ICommand RemoveAttachmentCommand => new RelayCommand(
+        async param =>
+        {
+            if (param is not Attachment attachment) return;
+            try
+            {
+                await attachmentRepository.DeleteAsync(attachment.Id);
+                if (attachment.FilePath is not null && File.Exists(attachment.FilePath))
+                    File.Delete(attachment.FilePath);
+                await LoadAttachmentsAsync();
+            }
+            catch (Exception ex)
+            {
+                dialogService.ShowError($"Failed to remove attachment: {ex.Message}");
+            }
+        });
+
+    public ICommand OpenAttachmentCommand => new RelayCommand(
+        param =>
+        {
+            if (param is not Attachment attachment || attachment.FilePath is null) return;
+            try
+            {
+                Process.Start(new ProcessStartInfo(attachment.FilePath) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                dialogService.ShowError($"Failed to open attachment: {ex.Message}");
+            }
+        });
+
+    public async Task AttachFileAsync(string sourcePath)
+    {
+        if (_selectedEntry is null) return;
+        try
+        {
+            var entryId = _selectedEntry.Id;
+            var destDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Billable", "attachments", entryId.ToString());
+            Directory.CreateDirectory(destDir);
+
+            var filename = Path.GetFileName(sourcePath);
+            var destPath = Path.Combine(destDir, filename);
+
+            // Avoid overwriting — append a counter suffix if needed
+            var counter = 1;
+            while (File.Exists(destPath))
+            {
+                var name = Path.GetFileNameWithoutExtension(filename);
+                var ext = Path.GetExtension(filename);
+                destPath = Path.Combine(destDir, $"{name} ({counter++}){ext}");
+            }
+
+            File.Copy(sourcePath, destPath);
+
+            var attachment = new Attachment
+            {
+                WorkEntryId = entryId,
+                Filename = Path.GetFileName(destPath),
+                FilePath = destPath,
+                MimeType = null
+            };
+            await attachmentRepository.AddAsync(attachment);
+            await LoadAttachmentsAsync();
+        }
+        catch (Exception ex)
+        {
+            dialogService.ShowError($"Failed to attach file: {ex.Message}");
+        }
+    }
+
+    private async Task LoadAttachmentsAsync()
+    {
+        if (_selectedEntry is null)
+        {
+            SelectedEntryAttachments = [];
+            return;
+        }
+        var list = await attachmentRepository.GetByWorkEntryAsync(_selectedEntry.Id);
+        SelectedEntryAttachments = [.. list];
+    }
 
     public event EventHandler? InvoiceCreated;
 

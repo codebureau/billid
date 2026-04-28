@@ -15,7 +15,7 @@ public class TimesheetViewModelTests
         var categoryRepo = new Mock<IWorkCategoryRepository>();
         var invoiceRepo = new Mock<IInvoiceRepository>();
         var dialogService = new Mock<IDialogService>();
-        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
         return (vm, entryRepo, categoryRepo);
     }
 
@@ -217,7 +217,7 @@ public class TimesheetViewModelDeleteConfirmTests
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
         entryRepo.Setup(r => r.GetFilteredAsync(It.IsAny<int>(), null, null, false, null))
                  .ReturnsAsync([]);
-        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
         return (vm, entryRepo, dialogService);
     }
 
@@ -283,7 +283,7 @@ public class TimesheetViewModelInvoicedLockTests
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
         entryRepo.Setup(r => r.GetFilteredAsync(It.IsAny<int>(), null, null, false, null))
                  .ReturnsAsync([]);
-        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
         return (vm, entryRepo, dialogService);
     }
 
@@ -395,7 +395,7 @@ public class TimesheetViewModelCategoryFilterTests
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
         entryRepo.Setup(r => r.GetFilteredAsync(It.IsAny<int>(), null, null, false, null))
                  .ReturnsAsync([]);
-        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
         return (vm, entryRepo, categoryRepo);
     }
 
