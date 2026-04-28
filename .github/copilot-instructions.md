@@ -160,6 +160,17 @@ Before moving to the next phase, the following must be in place:
 
 ---
 
+## Issue tracking & branching workflow
+
+- The backlog of work is stored in **GitHub Issues** on the `codebureau/billable` repo.
+- Use the **GitHub CLI** (`gh`) to read and manage issues — e.g. `gh issue view 51 --repo codebureau/billable`.
+- Before starting any issue, **present a plan to the user and wait for explicit approval**.
+- Every issue must be developed on its **own branch** — branch name convention: `issue/<number>-<short-description>` (e.g. `issue/51-export-work-entries`).
+- **Never commit or develop on `main`**.
+- Create the branch from the latest `main` before beginning work.
+
+---
+
 ## Source of truth
 
 Always refer to the following docs for requirements and schema decisions:

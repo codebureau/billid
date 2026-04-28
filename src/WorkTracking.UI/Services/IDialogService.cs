@@ -9,4 +9,5 @@ public interface IDialogService
     bool ShowInvoicePrepDialog(ViewModels.InvoicePrepViewModel vm);
     bool ShowAddClientDialog(ViewModels.AddClientViewModel vm);
     bool ShowWorkEntryDialog(ViewModels.WorkEntryDialogViewModel vm);
+    bool ShowExportDialog(ViewModels.ExportViewModel vm);
 }

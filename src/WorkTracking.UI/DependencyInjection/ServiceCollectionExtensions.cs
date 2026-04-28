@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using WorkTracking.Core.Services;
 using WorkTracking.Data.Database;
 using WorkTracking.Data.Repositories;
 using WorkTracking.Data.Repositories.Interfaces;
+using WorkTracking.Data.Services;
 using WorkTracking.UI.Services;
 using WorkTracking.UI.ViewModels;
 
@@ -23,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         services.AddScoped<ISettingRepository, SettingRepository>();
+        services.AddScoped<IExportService, ExportService>();
 
         // Services (Singleton)
         services.AddSingleton<IDialogService, DialogService>();
@@ -30,6 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IThemeService, ThemeService>();
 
         // ViewModels (Transient)
+        services.AddTransient<ExportViewModel>();
         services.AddTransient<TimesheetViewModel>();
         services.AddTransient<InvoicesViewModel>();
         services.AddTransient<SummaryViewModel>();

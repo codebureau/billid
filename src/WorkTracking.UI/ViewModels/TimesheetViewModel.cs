@@ -6,6 +6,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Markdig;
 using WorkTracking.Core.Models;
+using WorkTracking.Core.Services;
 using WorkTracking.Data.Database;
 using WorkTracking.Data.Repositories.Interfaces;
 using WorkTracking.UI.Commands;
@@ -18,6 +19,8 @@ public class TimesheetViewModel(
     IWorkCategoryRepository workCategoryRepository,
     IInvoiceRepository invoiceRepository,
     IAttachmentRepository attachmentRepository,
+    IClientRepository clientRepository,
+    IExportService exportService,
     IDialogService dialogService) : ViewModelBase
 {
     private static readonly WorkCategory AllCategoriesSentinel = new() { Id = 0, Name = "All categories" };
@@ -287,6 +290,35 @@ public class TimesheetViewModel(
         param => HasAnySelectedUninvoiced);
 
     public ICommand RefreshCommand => new RelayCommand(async param => await ApplyFiltersAsync());
+
+    public ICommand ExportCommand => new RelayCommand(async _ =>
+    {
+        var vm = new ExportViewModel(exportService);
+        await vm.LoadAsync();
+
+        if (!dialogService.ShowExportDialog(vm)) return;
+
+        var filePath = dialogService.PickSaveFile(
+            "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+            "work-entries.csv");
+        if (filePath is null) return;
+
+        try
+        {
+            var entries = Entries.Select(e => e.Entry).ToList();
+            var client = await clientRepository.GetByIdAsync(_clientId);
+            var clientsById = client is not null
+                ? (IReadOnlyDictionary<int, Client>)new Dictionary<int, Client> { [client.Id] = client }
+                : new Dictionary<int, Client>();
+            var categoriesById = _categories.ToDictionary(c => c.Id, c => c.Name);
+
+            await exportService.ExportToCsvAsync(entries, clientsById, categoriesById, vm.GetDefinition(), filePath);
+        }
+        catch (Exception ex)
+        {
+            dialogService.ShowError($"Export failed: {ex.Message}");
+        }
+    });
 
     public ICommand AddEntryCommand => new RelayCommand(async _ =>
     {
