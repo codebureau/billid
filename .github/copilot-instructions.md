@@ -76,6 +76,31 @@ docs/
 
 ---
 
+## UI theming rules
+
+- **All new UI must work correctly in both Light and Dark themes.**
+- Never use hard-coded colours (e.g. `Foreground="Black"`, `Background="#FFF"`) in any XAML View or Dialog.
+- Always use `DynamicResource` for every colour reference — e.g. `Background="{DynamicResource SurfaceBrush}"`.
+- Every `Window` (dialog) must set `Background="{DynamicResource SurfaceBrush}"` and `Foreground="{DynamicResource TextPrimaryBrush}"` on the root element.
+- Every root layout panel inside a dialog must also set `Background="{DynamicResource SurfaceBrush}"`.
+- Use the `{StaticResource SectionHeader}` style for section heading `TextBlock` elements — never set `FontWeight` inline.
+- Use `{DynamicResource BorderBrush}` on `Separator` elements (handled by the global `Separator` style automatically).
+- Available theme brushes (defined in `Themes/ModernTheme.xaml`, swapped by `ThemeService`):
+
+| Key | Purpose |
+|---|---|
+| `BackgroundBrush` | Page / window background |
+| `SurfaceBrush` | Card / dialog / panel surface |
+| `SurfaceAltBrush` | Alternate row / subtle surface |
+| `BorderBrush` | Borders, dividers |
+| `TextPrimaryBrush` | Primary text |
+| `TextSecondaryBrush` | Secondary / hint text |
+| `AccentBrush` | Primary action colour |
+| `HoverBrush` | General hover state |
+| `DangerBrush` | Destructive actions |
+
+---
+
 ## Data layer rules
 
 - All DB access goes through repository interfaces — no raw SQL outside repository classes

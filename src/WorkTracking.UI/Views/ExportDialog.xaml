@@ -7,13 +7,15 @@
         mc:Ignorable="d"
         Title="Export Work Entries" Width="460" SizeToContent="Height"
         ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SurfaceBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
         d:DataContext="{d:DesignInstance Type=vm:ExportViewModel}">
 
-    <StackPanel Margin="20">
+    <StackPanel Margin="20" Background="{DynamicResource SurfaceBrush}">
 
         <!-- Work Entry Fields -->
-        <TextBlock Text="Work Entry Fields" FontWeight="SemiBold" Margin="0,0,0,8"/>
-        <WrapPanel Margin="0,0,0,16">
+        <TextBlock Text="Work Entry Fields" Style="{StaticResource SectionHeader}" Margin="0,0,0,8"/>
+        <WrapPanel Margin="0,0,0,12">
             <CheckBox Content="Entry ID"      IsChecked="{Binding IncludeWorkEntryId}"   Margin="0,0,16,6"/>
             <CheckBox Content="Date"          IsChecked="{Binding IncludeDate}"           Margin="0,0,16,6"/>
             <CheckBox Content="Description"   IsChecked="{Binding IncludeDescription}"    Margin="0,0,16,6"/>
@@ -24,8 +26,10 @@
             <CheckBox Content="Notes"         IsChecked="{Binding IncludeNotesMarkdown}"  Margin="0,0,16,6"/>
         </WrapPanel>
 
+        <Separator Margin="0,0,0,12"/>
+
         <!-- Client Fields -->
-        <TextBlock Text="Client Fields" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <TextBlock Text="Client Fields" Style="{StaticResource SectionHeader}" Margin="0,0,0,8"/>
         <WrapPanel Margin="0,0,0,20">
             <CheckBox Content="Client ID"      IsChecked="{Binding IncludeClientId}"          Margin="0,0,16,6"/>
             <CheckBox Content="Client Name"    IsChecked="{Binding IncludeClientName}"         Margin="0,0,16,6"/>
@@ -35,6 +39,8 @@
             <CheckBox Content="Hourly Rate"    IsChecked="{Binding IncludeClientHourlyRate}"    Margin="0,0,16,6"/>
             <CheckBox Content="ABN"            IsChecked="{Binding IncludeClientAbn}"           Margin="0,0,16,6"/>
         </WrapPanel>
+
+        <Separator Margin="0,0,0,16"/>
 
         <!-- Buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
