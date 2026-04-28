@@ -133,10 +133,15 @@
                 </DataGrid.InputBindings>
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
+                        <EventSetter Event="MouseDoubleClick" Handler="OnRowDoubleClick"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsInvoiced}" Value="True">
                                 <Setter Property="Foreground" Value="Gray"/>
                             </DataTrigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
                         </Style.Triggers>
                     </Style>
                 </DataGrid.RowStyle>
