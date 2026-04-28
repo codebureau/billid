@@ -39,4 +39,10 @@ public partial class TimesheetView : UserControl
         var html = _vm?.RenderedNotesHtml ?? "<html><body></body></html>";
         NotesWebBrowser.NavigateToString(html);
     }
+
+    private void OnRowDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (_vm?.EditOrViewEntryCommand.CanExecute(null) == true)
+            _vm.EditOrViewEntryCommand.Execute(null);
+    }
 }

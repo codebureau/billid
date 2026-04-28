@@ -80,12 +80,12 @@
                         <TextBlock Text="Add Entry" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding EditEntryCommand}"
+                <Button Command="{Binding EditOrViewEntryCommand}"
                         Style="{StaticResource ToolbarButton}" Margin="0,0,4,0">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="{StaticResource IconEdit}" Fill="{DynamicResource TextPrimaryBrush}"
                               Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Edit" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding EditOrViewButtonLabel}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding DeleteEntryCommand}"
@@ -94,14 +94,6 @@
                         <Path Data="{StaticResource IconDelete}" Fill="{DynamicResource TextPrimaryBrush}"
                               Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Delete" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding ViewEntryCommand}"
-                        Style="{StaticResource ToolbarButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Path Data="{StaticResource IconView}" Fill="{DynamicResource TextPrimaryBrush}"
-                              Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="View" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
@@ -136,7 +128,7 @@
                       BorderThickness="0">
                 <DataGrid.InputBindings>
                     <KeyBinding Key="Insert" Command="{Binding AddEntryCommand}"/>
-                    <KeyBinding Key="F2" Command="{Binding EditEntryCommand}"/>
+                    <KeyBinding Key="F2" Command="{Binding EditOrViewEntryCommand}"/>
                     <KeyBinding Key="Delete" Command="{Binding DeleteEntryCommand}"/>
                 </DataGrid.InputBindings>
                 <DataGrid.RowStyle>

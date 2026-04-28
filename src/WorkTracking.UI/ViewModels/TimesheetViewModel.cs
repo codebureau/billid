@@ -68,6 +68,8 @@ public class TimesheetViewModel(
         {
             SetField(ref _selectedEntry, value);
             OnPropertyChanged(nameof(HasSelectedEntry));
+            OnPropertyChanged(nameof(CanEditSelectedEntry));
+            OnPropertyChanged(nameof(EditOrViewButtonLabel));
             OnPropertyChanged(nameof(RenderedNotesHtml));
         }
     }
@@ -298,14 +300,22 @@ public class TimesheetViewModel(
         }
     });
 
-    public ICommand EditEntryCommand => new RelayCommand(
+    public bool CanEditSelectedEntry => _selectedEntry is not null && !_selectedEntry.IsInvoiced;
+    public string EditOrViewButtonLabel => _selectedEntry?.IsInvoiced == true ? "View" : "Edit";
+
+    public ICommand EditOrViewEntryCommand => new RelayCommand(
         async _ =>
         {
             if (_selectedEntry is null) return;
             var enabledCategories = CategoriesWithAll.Skip(1).ToList();
-            var vm = new WorkEntryDialogViewModel(enabledCategories, _selectedEntry.Entry);
+            var isReadOnly = _selectedEntry.IsInvoiced;
+            var vm = new WorkEntryDialogViewModel(enabledCategories, _selectedEntry.Entry, isReadOnly: isReadOnly);
+            if (isReadOnly)
+            {
+                dialogService.ShowWorkEntryDialog(vm);
+                return;
+            }
             if (!dialogService.ShowWorkEntryDialog(vm)) return;
-
             try
             {
                 var entry = _selectedEntry.Entry;
@@ -322,7 +332,7 @@ public class TimesheetViewModel(
                 dialogService.ShowError($"Failed to update entry: {ex.Message}");
             }
         },
-        _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced);
+        _ => _selectedEntry is not null);
 
     public ICommand DeleteEntryCommand => new RelayCommand(
         async _ =>

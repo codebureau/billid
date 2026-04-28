@@ -296,23 +296,23 @@ public class TimesheetViewModelInvoicedLockTests
     };
 
     [Fact]
-    public async Task EditEntryCommand_WhenEntryIsInvoiced_CanExecuteReturnsFalse()
+    public async Task EditOrViewEntryCommand_WhenEntryIsInvoiced_CanExecuteReturnsTrue()
     {
         var (vm, _, _) = MakeVm();
         await vm.LoadAsync(1, 100m, null);
         vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: true), null);
 
-        vm.EditEntryCommand.CanExecute(null).Should().BeFalse();
+        vm.EditOrViewEntryCommand.CanExecute(null).Should().BeTrue();
     }
 
     [Fact]
-    public async Task EditEntryCommand_WhenEntryIsUninvoiced_CanExecuteReturnsTrue()
+    public async Task EditOrViewEntryCommand_WhenEntryIsUninvoiced_CanExecuteReturnsTrue()
     {
         var (vm, _, _) = MakeVm();
         await vm.LoadAsync(1, 100m, null);
         vm.SelectedEntry = new WorkEntryRowViewModel(MakeEntry(1, invoiced: false), null);
 
-        vm.EditEntryCommand.CanExecute(null).Should().BeTrue();
+        vm.EditOrViewEntryCommand.CanExecute(null).Should().BeTrue();
     }
 
     [Fact]
