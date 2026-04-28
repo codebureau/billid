@@ -24,11 +24,17 @@ if ($lastTag) {
 
 # ── 3. Prompt for new version ─────────────────────────────────────────────────
 Write-Host ""
-$version = Read-Host "  Enter new version (e.g. 1.2.0)"
-$version = $version.Trim().TrimStart('v')
+$rawVersion = Read-Host "  Enter new version (e.g. 1.2.0)"
+
+if ([string]::IsNullOrWhiteSpace($rawVersion)) {
+    Write-Host "  Aborted — no version entered." -ForegroundColor Yellow
+    exit 0
+}
+
+$version = $rawVersion.Trim().TrimStart('v')
 
 if ($version -notmatch '^\d+\.\d+\.\d+$') {
-    Write-Host "  Invalid format — expected MAJOR.MINOR.PATCH (e.g. 1.2.0)" -ForegroundColor Red
+    Write-Host "  Invalid format '$version' — expected MAJOR.MINOR.PATCH (e.g. 1.2.0)" -ForegroundColor Red
     exit 1
 }
 
