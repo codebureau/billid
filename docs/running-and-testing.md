@@ -116,32 +116,3 @@ dotnet build WorkTracking.slnx
 
 Expected output: `Build succeeded` with no errors or warnings.
 
----
-
-## Downloading and verifying a release
-
-Official releases are published at [github.com/codebureau/billable/releases](https://github.com/codebureau/billable/releases).
-
-Each release includes three files:
-
-| File | Purpose |
-|---|---|
-| `Billable-win-Setup.exe` | Installer — run this to install or update |
-| `releases.win.json` | Velopack update manifest |
-| `SHA256SUMS.txt` | SHA-256 checksums for the two files above |
-
-### Verifying the download (PowerShell)
-
-After downloading `Billable-win-Setup.exe`, open PowerShell in the same folder and run:
-
-```powershell
-(Get-FileHash .\Billable-win-Setup.exe -Algorithm SHA256).Hash.ToLower()
-```
-
-Compare the output against the hash for `Billable-win-Setup.exe` in `SHA256SUMS.txt`. They must match exactly.
-
-### Windows Defender / SmartScreen warning
-
-Until the installer is Authenticode-signed (tracked in [#46](https://github.com/codebureau/billable/issues/46)), Windows may show an *"Unknown publisher"* SmartScreen prompt or flag the file as suspicious. This is a false positive caused by the installer having no code-signing reputation.
-
-**Workaround:** verify the SHA-256 checksum as above to confirm the file is the authentic release, then choose *"Run anyway"* in the SmartScreen dialog.
