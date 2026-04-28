@@ -6,6 +6,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Markdig;
 using WorkTracking.Core.Models;
+using WorkTracking.Data.Database;
 using WorkTracking.Data.Repositories.Interfaces;
 using WorkTracking.UI.Commands;
 using WorkTracking.UI.Services;
@@ -432,8 +433,8 @@ public class TimesheetViewModel(
         {
             var entryId = _selectedEntry.Id;
             var destDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Billable", "attachments", entryId.ToString());
+                DatabaseConnectionFactory.GetAppDataFolder(),
+                "attachments", entryId.ToString());
             Directory.CreateDirectory(destDir);
 
             var filename = Path.GetFileName(sourcePath);
