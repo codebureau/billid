@@ -139,8 +139,8 @@
                                 <Setter Property="Foreground" Value="Gray"/>
                             </DataTrigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Background" Value="{DynamicResource ListSelectedBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
