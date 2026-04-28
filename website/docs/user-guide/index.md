@@ -18,3 +18,4 @@ Billable is organised around **clients**. Each client has their own timesheet, i
 - [Timesheet](timesheet.md) — logging work and preparing invoices
 - [Invoices](invoices.md) — viewing and managing invoice records
 - [Settings](settings.md) — configuring billing preferences
+- [Exporting data](export.md) — exporting work entries to CSV

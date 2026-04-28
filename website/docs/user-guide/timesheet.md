@@ -58,3 +58,11 @@ If your client has an **invoice cap** configured, the timesheet shows a progress
 | `F2` | Edit selected entry |
 | `Delete` | Delete selected entry |
 | `F5` | Refresh list |
+
+---
+
+## Exporting work entries
+
+Click **Export…** in the Timesheet footer to export the currently filtered work entries to a CSV file.
+
+See [Exporting data](export.md) for full details.
