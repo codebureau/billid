@@ -33,11 +33,9 @@ public partial class App : Application
 
         DispatcherUnhandledException += (_, e) =>
         {
-            Log.Fatal(e.Exception, "Unhandled UI thread exception");
-            Log.CloseAndFlush();
-            ShowCrashDialog(e.Exception);
+            Log.Error(e.Exception, "Unhandled UI thread exception");
             e.Handled = true;
-            Shutdown(1);
+            ShowErrorDialog(e.Exception);
         };
 
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
@@ -46,7 +44,7 @@ public partial class App : Application
             Log.Fatal(ex, "Unhandled AppDomain exception (terminating: {IsTerminating})", e.IsTerminating);
             Log.CloseAndFlush();
             if (e.IsTerminating)
-                ShowCrashDialog(ex);
+                ShowErrorDialog(ex);
         };
 
         TaskScheduler.UnobservedTaskException += (_, e) =>
@@ -94,7 +92,7 @@ public partial class App : Application
         {
             Log.Fatal(ex, "Fatal error during startup");
             Log.CloseAndFlush();
-            ShowCrashDialog(ex);
+            ShowErrorDialog(ex);
             Shutdown(1);
         }
     }
@@ -107,7 +105,7 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    private static void ShowCrashDialog(Exception? ex)
+    private static void ShowErrorDialog(Exception? ex)
     {
         var logFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
