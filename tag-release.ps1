@@ -7,7 +7,18 @@ Set-Location $PSScriptRoot
 Add-Type -AssemblyName Microsoft.VisualBasic
 Add-Type -AssemblyName System.Windows.Forms
 
-# ── 1. Check working tree is clean ────────────────────────────────────────────
+# ── 1. Must be on main ────────────────────────────────────────────────────────
+$currentBranch = git rev-parse --abbrev-ref HEAD
+if ($currentBranch -ne 'main') {
+    [System.Windows.Forms.MessageBox]::Show(
+        "You are on branch '$currentBranch'.`n`nRelease tags must be created from main.`n`nSwitch to main and merge your changes before releasing.",
+        "Wrong Branch",
+        [System.Windows.Forms.MessageBoxButtons]::OK,
+        [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null
+    Write-Host "  Aborted — must be on main to tag a release." -ForegroundColor Red; exit 1
+}
+
+# ── 2. Check working tree is clean ────────────────────────────────────────────
 $status = git status --porcelain
 if ($status) {
     Write-Host ""
@@ -24,7 +35,7 @@ if ($status) {
     }
 }
 
-# ── 2. Show the last tag so the user knows what to increment ──────────────────
+# ── 3. Show the last tag so the user knows what to increment ──────────────────
 $lastTag = git describe --tags --abbrev=0 2>$null
 $prompt = if ($lastTag) { "Last release: $lastTag`n`nEnter new version (e.g. 1.2.0):" } else { "Enter new version (e.g. 1.0.0):" }
 if ($lastTag) {
@@ -32,7 +43,7 @@ if ($lastTag) {
     Write-Host "  Last release tag : $lastTag" -ForegroundColor Cyan
 }
 
-# ── 3. Prompt for new version (GUI input box) ─────────────────────────────────
+# ── 4. Prompt for new version (GUI input box) ─────────────────────────────────
 Write-Host ""
 $rawVersion = [Microsoft.VisualBasic.Interaction]::InputBox($prompt, "Tag Release", "")
 
@@ -53,7 +64,7 @@ if ($version -notmatch '^\d+\.\d+\.\d+$') {
 
 $tag = "v$version"
 
-# ── 4. Confirm ────────────────────────────────────────────────────────────────
+# ── 5. Confirm ────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "  Will create and push tag: $tag" -ForegroundColor Green
 $confirm = [System.Windows.Forms.MessageBox]::Show(
@@ -65,7 +76,7 @@ if ($confirm -ne [System.Windows.Forms.DialogResult]::OK) {
     Write-Host "  Aborted." -ForegroundColor Yellow; exit 0
 }
 
-# ── 5. Create and push the tag ────────────────────────────────────────────────
+# ── 6. Create and push the tag ────────────────────────────────────────────────
 git tag $tag
 if ($LASTEXITCODE -ne 0) { Write-Host "  git tag failed" -ForegroundColor Red; exit 1 }
 

@@ -58,6 +58,9 @@ jobs:
           --icon src/WorkTracking.UI/app.ico
           --outputDir installer/
 
+      - name: List installer output
+        run: Get-ChildItem -Recurse installer/ | Select-Object FullName
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
