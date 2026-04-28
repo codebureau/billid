@@ -19,8 +19,8 @@ public partial class App : Application
     public App()
     {
         var logFolder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Billable", "logs");
+            DatabaseConnectionFactory.GetAppDataFolder(),
+            "logs");
         Directory.CreateDirectory(logFolder);
 
         Log.Logger = new LoggerConfiguration()
