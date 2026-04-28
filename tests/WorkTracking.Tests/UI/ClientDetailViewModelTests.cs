@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Moq;
 using WorkTracking.Core.Models;
+using WorkTracking.Core.Services;
 using WorkTracking.Data.Repositories.Interfaces;
 using WorkTracking.UI.Services;
 using WorkTracking.UI.ViewModels;
@@ -21,7 +22,7 @@ public class ClientDetailViewModelTests
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
         var invoiceRepo = new Mock<IInvoiceRepository>();
         var dialogService = new Mock<IDialogService>();
-        return new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
+        return new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, new Mock<IClientRepository>().Object, new Mock<IExportService>().Object, dialogService.Object);
     }
 
     private static InvoicesViewModel MakeInvoicesVm()

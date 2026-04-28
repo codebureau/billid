@@ -76,6 +76,31 @@ docs/
 
 ---
 
+## UI theming rules
+
+- **All new UI must work correctly in both Light and Dark themes.**
+- Never use hard-coded colours (e.g. `Foreground="Black"`, `Background="#FFF"`) in any XAML View or Dialog.
+- Always use `DynamicResource` for every colour reference — e.g. `Background="{DynamicResource SurfaceBrush}"`.
+- Every `Window` (dialog) must set `Background="{DynamicResource SurfaceBrush}"` and `Foreground="{DynamicResource TextPrimaryBrush}"` on the root element.
+- Every root layout panel inside a dialog must also set `Background="{DynamicResource SurfaceBrush}"`.
+- Use the `{StaticResource SectionHeader}` style for section heading `TextBlock` elements — never set `FontWeight` inline.
+- Use `{DynamicResource BorderBrush}` on `Separator` elements (handled by the global `Separator` style automatically).
+- Available theme brushes (defined in `Themes/ModernTheme.xaml`, swapped by `ThemeService`):
+
+| Key | Purpose |
+|---|---|
+| `BackgroundBrush` | Page / window background |
+| `SurfaceBrush` | Card / dialog / panel surface |
+| `SurfaceAltBrush` | Alternate row / subtle surface |
+| `BorderBrush` | Borders, dividers |
+| `TextPrimaryBrush` | Primary text |
+| `TextSecondaryBrush` | Secondary / hint text |
+| `AccentBrush` | Primary action colour |
+| `HoverBrush` | General hover state |
+| `DangerBrush` | Destructive actions |
+
+---
+
 ## Data layer rules
 
 - All DB access goes through repository interfaces — no raw SQL outside repository classes
@@ -157,6 +182,17 @@ Before moving to the next phase, the following must be in place:
 1. **Tests written and passing** — all new logic covered by unit or integration tests; `dotnet test` passes with no failures
 2. **`docs/progress.md` updated** — documents what was built in the phase, what tests were added, and any decisions made
 3. **`docs/running-and-testing.md` updated** — reflects the current state of the app: how to run it, how to run the tests, and what is testable at this point
+
+---
+
+## Issue tracking & branching workflow
+
+- The backlog of work is stored in **GitHub Issues** on the `codebureau/billable` repo.
+- Use the **GitHub CLI** (`gh`) to read and manage issues — e.g. `gh issue view 51 --repo codebureau/billable`.
+- Before starting any issue, **present a plan to the user and wait for explicit approval**.
+- Every issue must be developed on its **own branch** — branch name convention: `issue/<number>-<short-description>` (e.g. `issue/51-export-work-entries`).
+- **Never commit or develop on `main`**.
+- Create the branch from the latest `main` before beginning work.
 
 ---
 

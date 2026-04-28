@@ -1,0 +1,56 @@
+<Window x:Class="WorkTracking.UI.Views.ExportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:WorkTracking.UI.ViewModels"
+        mc:Ignorable="d"
+        Title="Export Work Entries" Width="460" SizeToContent="Height"
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SurfaceBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        d:DataContext="{d:DesignInstance Type=vm:ExportViewModel}">
+
+    <StackPanel Margin="20" Background="{DynamicResource SurfaceBrush}">
+
+        <!-- Work Entry Fields -->
+        <TextBlock Text="Work Entry Fields" Style="{StaticResource SectionHeader}" Margin="0,0,0,8"/>
+        <WrapPanel Margin="0,0,0,12">
+            <CheckBox Content="Entry ID"      IsChecked="{Binding IncludeWorkEntryId}"   Margin="0,0,16,6"/>
+            <CheckBox Content="Date"          IsChecked="{Binding IncludeDate}"           Margin="0,0,16,6"/>
+            <CheckBox Content="Description"   IsChecked="{Binding IncludeDescription}"    Margin="0,0,16,6"/>
+            <CheckBox Content="Hours"         IsChecked="{Binding IncludeHours}"          Margin="0,0,16,6"/>
+            <CheckBox Content="Work Category" IsChecked="{Binding IncludeWorkCategory}"   Margin="0,0,16,6"/>
+            <CheckBox Content="Invoiced"      IsChecked="{Binding IncludeInvoicedFlag}"   Margin="0,0,16,6"/>
+            <CheckBox Content="Invoice ID"    IsChecked="{Binding IncludeInvoiceId}"      Margin="0,0,16,6"/>
+            <CheckBox Content="Notes"         IsChecked="{Binding IncludeNotesMarkdown}"  Margin="0,0,16,6"/>
+        </WrapPanel>
+
+        <Separator Margin="0,0,0,12"/>
+
+        <!-- Client Fields -->
+        <TextBlock Text="Client Fields" Style="{StaticResource SectionHeader}" Margin="0,0,0,8"/>
+        <WrapPanel Margin="0,0,0,20">
+            <CheckBox Content="Client ID"      IsChecked="{Binding IncludeClientId}"          Margin="0,0,16,6"/>
+            <CheckBox Content="Client Name"    IsChecked="{Binding IncludeClientName}"         Margin="0,0,16,6"/>
+            <CheckBox Content="Company Name"   IsChecked="{Binding IncludeClientCompanyName}"  Margin="0,0,16,6"/>
+            <CheckBox Content="Email"          IsChecked="{Binding IncludeClientEmail}"         Margin="0,0,16,6"/>
+            <CheckBox Content="Phone"          IsChecked="{Binding IncludeClientPhone}"         Margin="0,0,16,6"/>
+            <CheckBox Content="Hourly Rate"    IsChecked="{Binding IncludeClientHourlyRate}"    Margin="0,0,16,6"/>
+            <CheckBox Content="ABN"            IsChecked="{Binding IncludeClientAbn}"           Margin="0,0,16,6"/>
+        </WrapPanel>
+
+        <Separator Margin="0,0,0,16"/>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Reset to Defaults" Command="{Binding ResetToDefaultsCommand}"
+                    Style="{StaticResource SecondaryButton}" Width="130" Margin="0,0,8,0"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}"
+                    Style="{StaticResource SecondaryButton}" Width="80" IsCancel="True" Margin="0,0,8,0"/>
+            <Button Content="Export" Command="{Binding ExportCommand}"
+                    Style="{StaticResource PrimaryButton}" Width="80" IsDefault="True"/>
+        </StackPanel>
+
+    </StackPanel>
+</Window>

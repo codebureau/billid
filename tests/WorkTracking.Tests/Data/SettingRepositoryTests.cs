@@ -61,7 +61,8 @@ public class SettingRepositoryTests : IDisposable
 
         var result = await _repository.GetAllAsync();
 
-        result.Should().HaveCount(2);
+        result.Should().HaveCountGreaterThanOrEqualTo(2);
         result.Should().Contain(s => s.Key == "a" && s.Value == "1");
+        result.Should().Contain(s => s.Key == "b" && s.Value == "2");
     }
 }

@@ -13,7 +13,8 @@ public class DialogService : IDialogService
             .OfType<Window>()
             .FirstOrDefault(w => w.IsActive && w is not Views.WorkEntryDialog
                                             and not Views.InvoicePrepDialog
-                                            and not Views.AddClientDialog);
+                                            and not Views.AddClientDialog
+                                            and not Views.ExportDialog);
         return active ?? Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
     }
 
@@ -54,5 +55,11 @@ public class DialogService : IDialogService
         var dialog = new Views.WorkEntryDialog(vm) { Owner = GetOwnerWindow() };
         dialog.ShowDialog();
         return vm.Confirmed;
+    }
+
+    public bool ShowExportDialog(ViewModels.ExportViewModel vm)
+    {
+        var dialog = new Views.ExportDialog(vm) { Owner = GetOwnerWindow() };
+        return dialog.ShowDialog() == true;
     }
 }
