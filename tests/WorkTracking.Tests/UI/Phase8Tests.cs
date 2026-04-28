@@ -106,7 +106,7 @@ public class TimesheetViewModelGroupingTests
         var categoryRepo = new Mock<IWorkCategoryRepository>();
         var invoiceRepo = new Mock<IInvoiceRepository>();
         var dialogService = new Mock<IDialogService>();
-        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        var vm = new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
         return (vm, entryRepo);
     }
@@ -152,7 +152,7 @@ public class TimesheetViewModelMarkdownTests
         var categoryRepo = new Mock<IWorkCategoryRepository>();
         var invoiceRepo = new Mock<IInvoiceRepository>();
         var dialogService = new Mock<IDialogService>();
-        return new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        return new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
     }
 
     [Fact]

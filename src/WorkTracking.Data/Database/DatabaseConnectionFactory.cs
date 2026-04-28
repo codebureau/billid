@@ -10,17 +10,22 @@ public class DatabaseConnectionFactory(string connectionString) : IDatabaseConne
         return connection;
     }
 
-    public static string GetDefaultConnectionString()
+    public static string GetAppDataFolder()
     {
         var folder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Billable");
-        Directory.CreateDirectory(folder);
+            "Billable"
 #if DEBUG
-        const string dbName = "billable-dev.db";
-#else
-        const string dbName = "billable.db";
+            , "dev"
 #endif
-        return $"Data Source={Path.Combine(folder, dbName)}";
+        );
+        Directory.CreateDirectory(folder);
+        return folder;
+    }
+
+    public static string GetDefaultConnectionString()
+    {
+        var folder = GetAppDataFolder();
+        return $"Data Source={Path.Combine(folder, "billable.db")}";
     }
 }

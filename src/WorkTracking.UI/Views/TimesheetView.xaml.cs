@@ -45,4 +45,22 @@ public partial class TimesheetView : UserControl
         if (_vm?.EditOrViewEntryCommand.CanExecute(null) == true)
             _vm.EditOrViewEntryCommand.Execute(null);
     }
+
+    private void OnAttachmentsPaneDragOver(object sender, DragEventArgs e)
+    {
+        e.Effects = _vm?.CanAddAttachment == true && e.Data.GetDataPresent(DataFormats.FileDrop)
+            ? DragDropEffects.Copy
+            : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private async void OnAttachmentsPaneDrop(object sender, DragEventArgs e)
+    {
+        if (_vm is null || !_vm.CanAddAttachment) return;
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+
+        var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+        foreach (var file in files)
+            await _vm.AttachFileAsync(file);
+    }
 }

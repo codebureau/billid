@@ -181,33 +181,103 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <!-- NOTES DRAWER -->
+            <!-- NOTES / ATTACHMENTS DRAWER -->
             <Border Grid.Column="1"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1,0,0,0"
+                    AllowDrop="True"
+                    DragOver="OnAttachmentsPaneDragOver"
+                    Drop="OnAttachmentsPaneDrop"
                     Visibility="{Binding IsNotesOpen, Converter={StaticResource BoolToVisibilityConverter}}">
-                <DockPanel Margin="10">
-                    <TextBlock DockPanel.Dock="Top" Text="Notes"
-                               FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <DockPanel Margin="10" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Top" Text="Notes"
+                                   FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
 
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="Select a row to view notes."
-                               Foreground="{DynamicResource TextSecondaryBrush}" FontStyle="Italic"
-                               Visibility="{Binding HasSelectedEntry,
-                                   Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Select a row to view notes."
+                                   Foreground="{DynamicResource TextSecondaryBrush}" FontStyle="Italic"
+                                   Visibility="{Binding HasSelectedEntry,
+                                       Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
 
-                    <WebBrowser x:Name="NotesWebBrowser"
-                                DockPanel.Dock="Top"
-                                MinHeight="100" MaxHeight="300"
-                                Visibility="{Binding HasSelectedEntry,
-                                    Converter={StaticResource BoolToVisibilityConverter}}"
-                                Margin="0,0,0,10"/>
+                        <WebBrowser x:Name="NotesWebBrowser"
+                                    DockPanel.Dock="Top"
+                                    MinHeight="100" MaxHeight="300"
+                                    Visibility="{Binding HasSelectedEntry,
+                                        Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Margin="0,0,0,10"/>
 
-                    <TextBlock DockPanel.Dock="Top" Text="Attachments"
-                               FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4"/>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="No attachments."
-                               Foreground="{DynamicResource TextSecondaryBrush}" FontStyle="Italic" FontSize="11"/>
-                </DockPanel>
+                        <!-- Attachments header row — only when an entry is selected -->
+                        <DockPanel DockPanel.Dock="Top" Margin="0,4,0,6"
+                                   Visibility="{Binding HasSelectedEntry, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock DockPanel.Dock="Left" Text="Attachments"
+                                       FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                            <Button DockPanel.Dock="Right"
+                                    Content="+ Attach"
+                                    Command="{Binding AddAttachmentCommand}"
+                                    Style="{StaticResource ToolbarButton}"
+                                    FontSize="11" Padding="6,2"
+                                    IsEnabled="{Binding CanAddAttachment}"/>
+                        </DockPanel>
+
+                        <!-- "No attachments" — visible only when entry selected AND list empty -->
+                        <TextBlock DockPanel.Dock="Top"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" FontStyle="Italic" FontSize="11">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Setter Property="Text" Value="No attachments. Drop files here to attach."/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding HasSelectedEntry}" Value="True"/>
+                                                <Condition Binding="{Binding SelectedEntryAttachments.Count}" Value="0"/>
+                                                <Condition Binding="{Binding CanAddAttachment}" Value="True"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding HasSelectedEntry}" Value="True"/>
+                                                <Condition Binding="{Binding SelectedEntryAttachments.Count}" Value="0"/>
+                                                <Condition Binding="{Binding CanAddAttachment}" Value="False"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Setter Property="Text" Value="No attachments."/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <!-- Attachment list -->
+                        <ItemsControl DockPanel.Dock="Top"
+                                      ItemsSource="{Binding SelectedEntryAttachments}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,2">
+                                        <Button DockPanel.Dock="Right"
+                                                Content="✕"
+                                                Command="{Binding DataContext.RemoveAttachmentCommand,
+                                                    RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ToolbarButton}"
+                                                FontSize="10" Padding="4,1"
+                                                ToolTip="Remove attachment"/>
+                                        <Button DockPanel.Dock="Left"
+                                                Content="{Binding Filename}"
+                                                Command="{Binding DataContext.OpenAttachmentCommand,
+                                                    RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ToolbarButton}"
+                                                FontSize="11"
+                                                HorizontalContentAlignment="Left"
+                                                ToolTip="{Binding FilePath}"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DockPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
 

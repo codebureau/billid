@@ -27,7 +27,7 @@ public class MainWindowViewModelTests
         categoryRepo.Setup(r => r.GetByClientAsync(It.IsAny<int>())).ReturnsAsync([]);
         var invoiceRepo = new Mock<IInvoiceRepository>();
         var dialogService = new Mock<IDialogService>();
-        return new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, dialogService.Object);
+        return new TimesheetViewModel(entryRepo.Object, categoryRepo.Object, invoiceRepo.Object, new Mock<IAttachmentRepository>().Object, dialogService.Object);
     }
 
     private static InvoicesViewModel MakeInvoicesVm()
