@@ -3,16 +3,34 @@
 ## Installation
 
 1. Go to the [Releases page](https://github.com/codebureau/billable/releases)
-2. Download `billable.exe` from the latest release
-3. Place it anywhere convenient -- your Desktop, `C:\Tools\`, wherever you prefer
-4. Double-click to launch
+2. Download `Billable-win-Setup.exe` from the latest release
+3. Run the installer — it will install Billable and create a Start Menu shortcut
+4. Launch Billable from the Start Menu
 
-No installer, no .NET prerequisite -- everything is bundled inside the single file.
+No .NET prerequisite — everything is bundled inside the installer.
 
-!!! warning "Windows SmartScreen warning"
-    Because the executable is not yet code-signed, Windows may show a SmartScreen
-    prompt on first run. This is expected.
-    Click **More info**, then **Run anyway** to proceed. This prompt only appears once.
+!!! warning "Windows SmartScreen / Defender warning"
+    Because the installer is not yet code-signed, Windows may show a SmartScreen
+    prompt or flag the file as suspicious. This is a false positive caused by the
+    installer having no code-signing reputation.
+
+    Before running, verify the download using the `SHA256SUMS.txt` file attached to
+    the release (see [Verifying your download](#verifying-your-download) below).
+    Then click **More info → Run anyway** in the SmartScreen dialog.
+
+---
+
+## Verifying your download
+
+Each release includes a `SHA256SUMS.txt` file on the [Releases page](https://github.com/codebureau/billable/releases). Use it to confirm your download hasn't been tampered with.
+
+Open PowerShell in the folder where you saved the installer and run:
+
+```powershell
+(Get-FileHash .\Billable-win-Setup.exe -Algorithm SHA256).Hash.ToLower()
+```
+
+Compare the output against the hash listed for `Billable-win-Setup.exe` in `SHA256SUMS.txt`. They must match exactly.
 
 ---
 

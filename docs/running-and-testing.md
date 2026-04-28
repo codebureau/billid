@@ -115,3 +115,4 @@ dotnet build WorkTracking.slnx
 ```
 
 Expected output: `Build succeeded` with no errors or warnings.
+

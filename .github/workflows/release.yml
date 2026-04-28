@@ -58,11 +58,22 @@ jobs:
           --icon src/WorkTracking.UI/app.ico
           --outputDir installer/
 
+      - name: Generate checksums
+        shell: pwsh
+        run: |
+          $files = @("installer/Billable-win-Setup.exe", "installer/releases.win.json")
+          $lines = foreach ($f in $files) {
+            $hash = (Get-FileHash $f -Algorithm SHA256).Hash.ToLower()
+            "$hash  $(Split-Path $f -Leaf)"
+          }
+          $lines | Out-File -FilePath installer/SHA256SUMS.txt -Encoding utf8
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             installer/Billable-win-Setup.exe
             installer/releases.win.json
+            installer/SHA256SUMS.txt
           generate_release_notes: true
           fail_on_unmatched_files: true
