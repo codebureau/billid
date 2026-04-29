@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Input;
 using WorkTracking.Core.Models;
 using WorkTracking.UI.Commands;
@@ -30,6 +31,7 @@ public class MainWindowViewModel(
     public event EventHandler? ShowAboutRequested;
 
     public ICommand ShowAboutCommand  => new RelayCommand(_ => ShowAboutRequested?.Invoke(this, EventArgs.Empty));
+    public ICommand OpenHelpCommand   => new RelayCommand(_ => Process.Start(new ProcessStartInfo("https://codebureau.github.io/billid/") { UseShellExecute = true }));
     public ICommand GoHomeCommand     => new RelayCommand(_ => NavigateHome());
     public ICommand GoSettingsCommand => new RelayCommand(_ => NavigateSettings());
 
