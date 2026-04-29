@@ -1,6 +1,6 @@
 # User Guide
 
-Billable is organised around **clients**. Each client has their own timesheet, invoice history, summary, and settings.
+billid is organised around **clients**. Each client has their own timesheet, invoice history, summary, and settings.
 
 ## Navigation
 

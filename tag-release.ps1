@@ -85,5 +85,5 @@ if ($LASTEXITCODE -ne 0) { Write-Host "  git push failed" -ForegroundColor Red; 
 
 Write-Host ""
 Write-Host "  Tag $tag pushed — GitHub Actions release workflow is now running." -ForegroundColor Green
-Write-Host "  https://github.com/codebureau/billable/actions" -ForegroundColor Cyan
+Write-Host "  https://github.com/codebureau/billid/actions" -ForegroundColor Cyan
 Write-Host ""

@@ -36,7 +36,7 @@
 
             <!-- Logo -->
             <Image Grid.Row="0"
-                   Source="/billable-logo.png"
+                   Source="/billid-logo.png"
                    Width="320"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
@@ -52,7 +52,7 @@
                 <TextBlock x:Name="VersionText"
                            Foreground="White"
                            FontSize="12"/>
-                <TextBlock Text="  ·  github.com/codebureau/billable"
+                <TextBlock Text="  ·  github.com/codebureau/billid"
                            Foreground="White"
                            FontSize="12"/>
             </StackPanel>

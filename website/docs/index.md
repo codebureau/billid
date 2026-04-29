@@ -1,8 +1,8 @@
-# Billable
+# billid
 
 **Local-first time tracking and invoicing for solo consultants.**
 
-Billable is a Windows desktop application that helps independent consultants track their time, manage clients, and prepare invoices — entirely offline, with no subscription and no cloud dependency. Your data stays on your machine.
+billid is a Windows desktop application that helps independent consultants track their time, manage clients, and prepare invoices — entirely offline, with no subscription and no cloud dependency. Your data stays on your machine.
 
 ---
 
@@ -18,8 +18,8 @@ Billable is a Windows desktop application that helps independent consultants tra
 
 ## Quick start
 
-1. [Download the latest release](https://github.com/codebureau/billable/releases) and run the installer
-2. Launch **Billable**
+1. [Download the latest release](https://github.com/codebureau/billid/releases) and run the installer
+2. Launch **billid**
 3. Click **+ Add** to create your first client
 4. Start logging work entries in the **Timesheet** tab
 
@@ -29,7 +29,7 @@ Billable is a Windows desktop application that helps independent consultants tra
 
 ## Open source
 
-Billable is open source under the MIT licence. Contributions are welcome.
+billid is open source under the MIT licence. Contributions are welcome.
 
-[View on GitHub](https://github.com/codebureau/billable){ .md-button .md-button--primary }
+[View on GitHub](https://github.com/codebureau/billid){ .md-button .md-button--primary }
 [Contributing guide](developer/contributing.md){ .md-button }

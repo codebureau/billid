@@ -51,17 +51,17 @@ jobs:
       - name: Pack installer
         run: >
           vpk pack
-          --packId Billable
+          --packId billid
           --packVersion ${{ steps.version.outputs.VERSION }}
           --packDir publish/
-          --mainExe billable.exe
+          --mainExe billid.exe
           --icon src/WorkTracking.UI/app.ico
           --outputDir installer/
 
       - name: Generate checksums
         shell: pwsh
         run: |
-          $files = @("installer/Billable-win-Setup.exe", "installer/releases.win.json")
+          $files = @("installer/billid-win-Setup.exe", "installer/releases.win.json")
           $lines = foreach ($f in $files) {
             $hash = (Get-FileHash $f -Algorithm SHA256).Hash.ToLower()
             "$hash  $(Split-Path $f -Leaf)"
@@ -72,7 +72,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            installer/Billable-win-Setup.exe
+            installer/billid-win-Setup.exe
             installer/releases.win.json
             installer/SHA256SUMS.txt
           generate_release_notes: true

@@ -3,7 +3,7 @@
   <ItemGroup>
     <Resource Include="app.ico" />
     <Resource Include="app-icon.png" />
-    <Resource Include="billable-logo.png" />
+    <Resource Include="billid-logo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,10 +27,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyName>billable</AssemblyName>
+    <AssemblyName>billid</AssemblyName>
     <ApplicationIcon>app.ico</ApplicationIcon>
     <Company>Codebureau</Company>
-    <Product>Billable</Product>
+    <Product>billid</Product>
     <Copyright>Copyright © Codebureau $([System.DateTime]::Now.Year)</Copyright>
     <StartupObject>WorkTracking.UI.Program</StartupObject>
   </PropertyGroup>

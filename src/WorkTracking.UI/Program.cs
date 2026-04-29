@@ -22,7 +22,7 @@ public static class Program
             Log.Fatal(ex, "Fatal unhandled exception in Main");
             Log.CloseAndFlush();
             MessageBox.Show(
-                $"Billable failed to start.\n\n{ex.Message}",
+                $"billid failed to start.\n\n{ex.Message}",
                 "Startup Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

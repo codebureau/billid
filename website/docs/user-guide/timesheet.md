@@ -46,7 +46,7 @@ Select a row and click **Delete** or press `Delete`. Confirm the prompt.
 
 ## Invoice cap warning
 
-If your client has an **invoice cap** configured, the timesheet shows a progress indicator. Depending on the cap behaviour setting, Billable will warn or block when you approach or exceed the cap.
+If your client has an **invoice cap** configured, the timesheet shows a progress indicator. Depending on the cap behaviour setting, billid will warn or block when you approach or exceed the cap.
 
 ---
 

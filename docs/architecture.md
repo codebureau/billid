@@ -2,7 +2,7 @@
 
 ## Overview
 
-Billable is a local-first Windows desktop application for tracking consulting work, notes, categories, and invoicing metadata.
+billid is a local-first Windows desktop application for tracking consulting work, notes, categories, and invoicing metadata.
 
 - Platform: Windows
 - Runtime: .NET 8
@@ -63,7 +63,7 @@ Key ViewModels:
 
 - Library: `Microsoft.Data.Sqlite` (or similar)
 - Pattern: Repository + lightweight query helpers
-- Connection: Single SQLite file (e.g., `billable.db`) in user data folder
+- Connection: Single SQLite file (e.g., `billid.db`) in user data folder
 - Migrations: On startup, ensure schema exists and apply any upgrades
 
 Repositories (examples):

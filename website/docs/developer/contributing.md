@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to Billable.
+Thanks for your interest in contributing to billid.
 
 ---
 
@@ -10,8 +10,8 @@ Thanks for your interest in contributing to Billable.
 2. Clone your fork:
 
     ```powershell
-    git clone https://github.com/<your-username>/billable
-    cd billable
+    git clone https://github.com/<your-username>/billid
+    cd billid
     dotnet build src/WorkTracking.slnx
     ```
 
@@ -48,7 +48,7 @@ See the [Releasing guide](releasing.md) for the full tag-based release workflow.
 
 ## Coding conventions
 
-Key rules — see [`.github/copilot-instructions.md`](https://github.com/codebureau/billable/blob/main/.github/copilot-instructions.md) for the full reference.
+Key rules — see [`.github/copilot-instructions.md`](https://github.com/codebureau/billid/blob/main/.github/copilot-instructions.md) for the full reference.
 
 - C# 12, nullable reference types enabled everywhere
 - `async`/`await` for all database operations — no `.Result` or `.Wait()`
