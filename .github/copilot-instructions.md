@@ -1,8 +1,8 @@
-# Copilot Instructions – WorkTracking / Billable
+# Copilot Instructions – WorkTracking / billid
 
 ## Project overview
 
-**Billable** is a local-first WPF (.NET 8) desktop application for solo consultants.
+**billid** is a local-first WPF (.NET 8) desktop application for solo consultants.
 Internal namespaces are brand-agnostic and use the prefix `WorkTracking.*`.
 
 ---
@@ -105,7 +105,7 @@ docs/
 
 - All DB access goes through repository interfaces — no raw SQL outside repository classes
 - Schema is applied once at startup via `SchemaInitializer` (idempotent — uses `CREATE TABLE IF NOT EXISTS`)
-- Connection string resolves the DB file from the user's `%APPDATA%\Billable\` folder
+- Connection string resolves the DB file from the user's `%APPDATA%\billid\` folder
 - Date conversion helpers live in `WorkTracking.Data.Helpers.DateConversion`
 - Repository methods follow the pattern:
   - `GetAllAsync()`, `GetByIdAsync(int id)`
@@ -187,8 +187,8 @@ Before moving to the next phase, the following must be in place:
 
 ## Issue tracking & branching workflow
 
-- The backlog of work is stored in **GitHub Issues** on the `codebureau/billable` repo.
-- Use the **GitHub CLI** (`gh`) to read and manage issues — e.g. `gh issue view 51 --repo codebureau/billable`.
+- The backlog of work is stored in **GitHub Issues** on the `codebureau/billid` repo.
+- Use the **GitHub CLI** (`gh`) to read and manage issues — e.g. `gh issue view 51 --repo codebureau/billid`.
 - Before starting any issue, **present a plan to the user and wait for explicit approval**.
 - Every issue must be developed on its **own branch** — branch name convention: `issue/<number>-<short-description>` (e.g. `issue/51-export-work-entries`).
 - **Never commit or develop on `main`**.

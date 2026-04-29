@@ -6,7 +6,7 @@ The **Invoices** tab shows all invoice records for a client, including which wor
 
 ## Invoice records
 
-Invoices in Billable are records — they represent invoices you have raised in your external accounting or invoicing tool (Xero, MYOB, FreshBooks, etc.). Billable does not generate invoice documents.
+Invoices in billid are records — they represent invoices you have raised in your external accounting or invoicing tool (Xero, MYOB, FreshBooks, etc.). billid does not generate invoice documents.
 
 Each invoice record stores:
 

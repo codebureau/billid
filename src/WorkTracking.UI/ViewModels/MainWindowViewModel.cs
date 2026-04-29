@@ -16,9 +16,9 @@ public class MainWindowViewModel(
     public AppSettingsViewModel  AppSettings  { get; } = appSettingsViewModel;
 
 #if DEBUG
-    public string Title => "Billable [DEV]";
+    public string Title => "billid [DEV]";
 #else
-    public string Title => "Billable";
+    public string Title => "billid";
 #endif
 
     private bool _showSettings;

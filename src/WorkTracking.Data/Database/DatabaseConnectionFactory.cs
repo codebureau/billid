@@ -14,7 +14,7 @@ public class DatabaseConnectionFactory(string connectionString) : IDatabaseConne
     {
         var folder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Billable"
+            "billid"
 #if DEBUG
             , "dev"
 #endif
@@ -26,6 +26,6 @@ public class DatabaseConnectionFactory(string connectionString) : IDatabaseConne
     public static string GetDefaultConnectionString()
     {
         var folder = GetAppDataFolder();
-        return $"Data Source={Path.Combine(folder, "billable.db")}";
+        return $"Data Source={Path.Combine(folder, "billid.db")}";
     }
 }

@@ -1,8 +1,8 @@
-site_name: Billable
+site_name: billid
 site_description: Local-first time tracking and invoicing for solo consultants
-site_url: https://codebureau.github.io/billable
-repo_url: https://github.com/codebureau/billable
-repo_name: codebureau/billable
+site_url: https://codebureau.github.io/billid
+repo_url: https://github.com/codebureau/billid
+repo_name: codebureau/billid
 edit_uri: edit/main/website/docs/
 
 docs_dir: website/docs
@@ -44,7 +44,7 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/codebureau/billable
+      link: https://github.com/codebureau/billid
 
 nav:
   - Home: index.md

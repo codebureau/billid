@@ -1,11 +1,11 @@
-# Billable
+# billid
 
 **Local-first time tracking and invoicing for solo consultants.**
 
-Billable is a Windows desktop application that helps independent consultants track their time, manage clients, and prepare invoices — entirely offline, with no subscription and no cloud dependency.
+billid is a Windows desktop application that helps independent consultants track their time, manage clients, and prepare invoices — entirely offline, with no subscription and no cloud dependency.
 
-[![Build](https://github.com/codebureau/billable/actions/workflows/build.yml/badge.svg)](https://github.com/codebureau/billable/actions/workflows/build.yml)
-[![Docs](https://github.com/codebureau/billable/actions/workflows/docs.yml/badge.svg)](https://codebureau.github.io/billable)
+[![Build](https://github.com/codebureau/billid/actions/workflows/build.yml/badge.svg)](https://github.com/codebureau/billid/actions/workflows/build.yml)
+[![Docs](https://github.com/codebureau/billid/actions/workflows/docs.yml/badge.svg)](https://codebureau.github.io/billid)
 
 ---
 
@@ -19,12 +19,12 @@ Billable is a Windows desktop application that helps independent consultants tra
 
 ## Documentation
 
-Full documentation is at **[codebureau.github.io/billable](https://codebureau.github.io/billable)**.
+Full documentation is at **[codebureau.github.io/billid](https://codebureau.github.io/billid)**.
 
-- [Getting started](https://codebureau.github.io/billable/getting-started/)
-- [User guide](https://codebureau.github.io/billable/user-guide/)
-- [Architecture](https://codebureau.github.io/billable/developer/architecture/)
-- [Contributing](https://codebureau.github.io/billable/developer/contributing/)
+- [Getting started](https://codebureau.github.io/billid/getting-started/)
+- [User guide](https://codebureau.github.io/billid/user-guide/)
+- [Architecture](https://codebureau.github.io/billid/developer/architecture/)
+- [Contributing](https://codebureau.github.io/billid/developer/contributing/)
 
 ## Quick start (from source)
 
@@ -36,8 +36,8 @@ Full documentation is at **[codebureau.github.io/billable](https://codebureau.gi
 ### Build and run
 
 ```powershell
-git clone https://github.com/codebureau/billable
-cd billable
+git clone https://github.com/codebureau/billid
+cd billid
 dotnet run --project src/WorkTracking.UI
 ```
 
@@ -58,7 +58,7 @@ dotnet test src/WorkTracking.slnx
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://codebureau.github.io/billable/developer/contributing/) for the branch/PR workflow, coding conventions, and how to run tests.
+See [CONTRIBUTING.md](https://codebureau.github.io/billid/developer/contributing/) for the branch/PR workflow, coding conventions, and how to run tests.
 
 ## Licence
 
