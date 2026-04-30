@@ -35,7 +35,7 @@ public class ClientDetailViewModel(
         Client = client;
         OnPropertyChanged(nameof(HasClient));
         SelectedTabIndex = 0;
-        _ = Timesheet.LoadAsync(client.Id, client.HourlyRate, client.InvoiceCapAmount);
+        _ = Timesheet.LoadAsync(client.Id, client.HourlyRate, client.InvoiceCapAmount, client.IsActive);
         _ = Invoices.LoadAsync(client.Id);
         _ = Summary.LoadAsync(client);
         _ = Settings.LoadAsync(client);
@@ -48,7 +48,7 @@ public class ClientDetailViewModel(
         {
             Client = updatedClient;
             OnPropertyChanged(nameof(HasClient));
-            _ = Timesheet.LoadAsync(updatedClient.Id, updatedClient.HourlyRate, updatedClient.InvoiceCapAmount);
+            _ = Timesheet.LoadAsync(updatedClient.Id, updatedClient.HourlyRate, updatedClient.InvoiceCapAmount, updatedClient.IsActive);
             _ = Summary.LoadAsync(updatedClient);
         };
     }

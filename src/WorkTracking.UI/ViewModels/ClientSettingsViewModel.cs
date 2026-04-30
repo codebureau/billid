@@ -4,6 +4,7 @@ using WorkTracking.Core.Models;
 using WorkTracking.Data.Repositories.Interfaces;
 using WorkTracking.UI.Commands;
 using WorkTracking.UI.Services;
+using CommandManager = System.Windows.Input.CommandManager;
 
 namespace WorkTracking.UI.ViewModels;
 
@@ -116,9 +117,49 @@ public class ClientSettingsViewModel(
 
     public ObservableCollection<CategoryToggleViewModel> Categories { get; } = [];
 
+    public bool IsActive => _client?.IsActive ?? true;
+    public bool IsReadOnly => !IsActive;
+
     public ICommand SaveCommand => new RelayCommand(
         async _ => await SaveAsync(),
-        _ => IsDirty && !IsSaving && !string.IsNullOrWhiteSpace(_name));
+        _ => IsDirty && !IsSaving && !string.IsNullOrWhiteSpace(_name) && IsActive);
+
+    public ICommand DeactivateCommand => new RelayCommand(
+        async _ =>
+        {
+            if (_client is null) return;
+            if (!dialogService.Confirm($"Deactivate '{_client.Name}'? They will be hidden from the client list.", "Deactivate Client")) return;
+            await clientRepository.SetActiveAsync(_client.Id, false);
+            _client.IsActive = false;
+            OnPropertyChanged(nameof(IsActive));
+            OnPropertyChanged(nameof(IsReadOnly));
+            CommandManager.InvalidateRequerySuggested();
+            ClientUpdated?.Invoke(this, _client);
+        },
+        _ => IsActive);
+
+    public ICommand ReactivateCommand => new RelayCommand(
+        async _ =>
+        {
+            if (_client is null) return;
+            await clientRepository.SetActiveAsync(_client.Id, true);
+            _client.IsActive = true;
+            OnPropertyChanged(nameof(IsActive));
+            OnPropertyChanged(nameof(IsReadOnly));
+            CommandManager.InvalidateRequerySuggested();
+            ClientUpdated?.Invoke(this, _client);
+        },
+        _ => !IsActive);
+
+    public ICommand DeleteClientCommand => new RelayCommand(
+        async _ =>
+        {
+            if (_client is null) return;
+            if (!dialogService.Confirm($"Delete client '{_client.Name}'? This cannot be undone.", "Delete Client")) return;
+            await clientRepository.DeleteAsync(_client.Id);
+            ClientDeleted?.Invoke(this, EventArgs.Empty);
+        },
+        _ => !IsActive);
 
     public string NewCategoryName
     {
@@ -138,6 +179,7 @@ public class ClientSettingsViewModel(
         _ => !string.IsNullOrWhiteSpace(_newCategoryName));
 
     public event EventHandler<Client>? ClientUpdated;
+    public event EventHandler? ClientDeleted;
 
     public async Task LoadAsync(Client client)
     {
@@ -168,6 +210,9 @@ public class ClientSettingsViewModel(
         }
 
         IsDirty = false;
+        OnPropertyChanged(nameof(IsActive));
+        OnPropertyChanged(nameof(IsReadOnly));
+        CommandManager.InvalidateRequerySuggested();
     }
 
     public async Task SaveAsync()

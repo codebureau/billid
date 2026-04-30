@@ -65,7 +65,16 @@ public class ClientListViewModelCrudTests
     {
         var workEntryMock = new Mock<IWorkEntryRepository>();
         workEntryMock.Setup(r => r.GetUninvoicedHoursByClientAsync()).ReturnsAsync(new Dictionary<int, decimal>());
-        return new(repo.Object, workEntryMock.Object, dialog.Object);
+        return new(repo.Object, workEntryMock.Object, dialog.Object, MakeAppSettings());
+    }
+
+    private static AppSettingsViewModel MakeAppSettings()
+    {
+        var theme = new Mock<IThemeService>();
+        theme.Setup(t => t.CurrentTheme).Returns(AppTheme.Light);
+        var settings = new Mock<ISettingRepository>();
+        settings.Setup(s => s.GetAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        return new AppSettingsViewModel(theme.Object, settings.Object);
     }
 
     [Fact]
@@ -74,7 +83,7 @@ public class ClientListViewModelCrudTests
         var repo = new Mock<IClientRepository>();
         var dialog = new Mock<IDialogService>();
         var added = new Client { Id = 99, Name = "New Co", HourlyRate = 120m };
-        repo.Setup(r => r.GetAllAsync()).ReturnsAsync([added]);
+        repo.Setup(r => r.GetAllAsync(It.IsAny<bool>())).ReturnsAsync([added]);
         repo.Setup(r => r.AddAsync(It.IsAny<Client>())).ReturnsAsync(added);
         dialog.Setup(d => d.ShowAddClientDialog(It.IsAny<AddClientViewModel>()))
               .Callback<AddClientViewModel>(vm => { vm.Name = "New Co"; vm.HourlyRate = 120m; })
@@ -93,7 +102,7 @@ public class ClientListViewModelCrudTests
         var repo = new Mock<IClientRepository>();
         var dialog = new Mock<IDialogService>();
         dialog.Setup(d => d.ShowAddClientDialog(It.IsAny<AddClientViewModel>())).Returns(false);
-        repo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        repo.Setup(r => r.GetAllAsync(It.IsAny<bool>())).ReturnsAsync([]);
 
         var vm = MakeVm(repo, dialog);
         vm.AddClientCommand.Execute(null);
@@ -107,7 +116,7 @@ public class ClientListViewModelCrudTests
     {
         var client = new Client { Id = 1, Name = "Acme" };
         var repo = new Mock<IClientRepository>();
-        repo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        repo.Setup(r => r.GetAllAsync(It.IsAny<bool>())).ReturnsAsync([]);
         var dialog = new Mock<IDialogService>();
         dialog.Setup(d => d.Confirm(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 

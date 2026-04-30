@@ -28,6 +28,7 @@ public class TimesheetViewModel(
     private int _clientId;
     private decimal _hourlyRate;
     private decimal? _invoiceCapAmount;
+    private bool _isClientActive = true;
 
     private ObservableCollection<WorkEntryRowViewModel> _entries = [];
     private ICollectionView? _entriesView;
@@ -322,6 +323,7 @@ public class TimesheetViewModel(
 
     public ICommand AddEntryCommand => new RelayCommand(async _ =>
     {
+        if (!_isClientActive) return;
         var enabledCategories = CategoriesWithAll.Skip(1).ToList();
         var vm = new WorkEntryDialogViewModel(enabledCategories);
         if (!dialogService.ShowWorkEntryDialog(vm)) return;
@@ -345,17 +347,17 @@ public class TimesheetViewModel(
         {
             dialogService.ShowError($"Failed to add entry: {ex.Message}");
         }
-    });
+    }, _ => _isClientActive);
 
-    public bool CanEditSelectedEntry => _selectedEntry is not null && !_selectedEntry.IsInvoiced;
-    public string EditOrViewButtonLabel => _selectedEntry?.IsInvoiced == true ? "View" : "Edit";
+    public bool CanEditSelectedEntry => _selectedEntry is not null && !_selectedEntry.IsInvoiced && _isClientActive;
+    public string EditOrViewButtonLabel => _selectedEntry?.IsInvoiced == true ? "View" : (!_isClientActive ? "View" : "Edit");
 
     public ICommand EditOrViewEntryCommand => new RelayCommand(
         async _ =>
         {
             if (_selectedEntry is null) return;
             var enabledCategories = CategoriesWithAll.Skip(1).ToList();
-            var isReadOnly = _selectedEntry.IsInvoiced;
+            var isReadOnly = _selectedEntry.IsInvoiced || !_isClientActive;
             var vm = new WorkEntryDialogViewModel(enabledCategories, _selectedEntry.Entry, isReadOnly: isReadOnly);
             if (isReadOnly)
             {
@@ -397,7 +399,7 @@ public class TimesheetViewModel(
                 dialogService.ShowError($"Failed to delete entry: {ex.Message}");
             }
         },
-        _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced);
+        _ => _selectedEntry is not null && !_selectedEntry.IsInvoiced && _isClientActive);
 
     public ICommand ViewEntryCommand => new RelayCommand(
         _ =>
@@ -514,11 +516,12 @@ public class TimesheetViewModel(
 
     // --- Data loading ---
 
-    public async Task LoadAsync(int clientId, decimal hourlyRate, decimal? invoiceCapAmount)
+    public async Task LoadAsync(int clientId, decimal hourlyRate, decimal? invoiceCapAmount, bool isClientActive = true)
     {
         _clientId = clientId;
         _hourlyRate = hourlyRate;
         _invoiceCapAmount = invoiceCapAmount;
+        _isClientActive = isClientActive;
 
         var categories = await workCategoryRepository.GetByClientAsync(clientId);
         Categories = [.. categories];

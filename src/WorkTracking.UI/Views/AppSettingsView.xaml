@@ -33,6 +33,20 @@
                                  ConverterParameter=Dark}"/>
             </StackPanel>
 
+            <!-- Clients -->
+            <TextBlock Text="Clients"
+                       Style="{StaticResource SectionHeader}"
+                       Margin="0,20,0,10"/>
+
+            <CheckBox Content="Show deactivated clients"
+                      FontSize="13"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      IsChecked="{Binding ShowDeactivatedClients}"/>
+            <TextBlock Text="When enabled, deactivated clients appear in the sidebar and search (greyed out). Their data is read-only."
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       FontSize="11" TextWrapping="Wrap"
+                       Margin="20,4,0,0"/>
+
             <!-- Save -->
             <Button Content="Save settings"
                     Command="{Binding SaveCommand}"

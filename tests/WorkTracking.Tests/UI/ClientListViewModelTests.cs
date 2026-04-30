@@ -19,7 +19,7 @@ public class ClientListViewModelTests
     private static Mock<IClientRepository> RepoWith(List<Client> clients)
     {
         var mock = new Mock<IClientRepository>();
-        mock.Setup(r => r.GetAllAsync()).ReturnsAsync(clients);
+        mock.Setup(r => r.GetAllAsync(It.IsAny<bool>())).ReturnsAsync(clients);
         return mock;
     }
 
@@ -30,8 +30,9 @@ public class ClientListViewModelTests
         return mock;
     }
 
+    private static AppSettingsViewModel MakeAppSettings() { var theme = new Mock<IThemeService>(); theme.Setup(t => t.CurrentTheme).Returns(AppTheme.Light); var settings = new Mock<ISettingRepository>(); settings.Setup(s => s.GetAsync(It.IsAny<string>())).ReturnsAsync((string?)null); return new AppSettingsViewModel(theme.Object, settings.Object); }
     private static ClientListViewModel MakeVm(List<Client> clients, Dictionary<int, decimal>? hours = null) =>
-        new(RepoWith(clients).Object, WorkEntryRepoWithHours(hours).Object, new Mock<IDialogService>().Object);
+        new(RepoWith(clients).Object, WorkEntryRepoWithHours(hours).Object, new Mock<IDialogService>().Object, MakeAppSettings());
 
     [Fact]
     public async Task LoadAsync_WithClients_PopulatesClients()

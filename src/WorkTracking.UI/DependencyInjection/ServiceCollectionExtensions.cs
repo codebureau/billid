@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ClientListViewModel>();
         services.AddTransient<ClientDetailViewModel>();
         services.AddTransient<HomeViewModel>();
-        services.AddTransient<AppSettingsViewModel>();
+        services.AddSingleton<AppSettingsViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         // Main window (Singleton — one instance)

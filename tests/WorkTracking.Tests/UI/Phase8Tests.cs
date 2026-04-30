@@ -12,13 +12,14 @@ namespace WorkTracking.Tests.UI;
 
 public class ClientListViewModelEmptyStateTests
 {
+    private static AppSettingsViewModel MakeAppSettings() { var theme = new Mock<IThemeService>(); theme.Setup(t => t.CurrentTheme).Returns(AppTheme.Light); var settings = new Mock<ISettingRepository>(); settings.Setup(s => s.GetAsync(It.IsAny<string>())).ReturnsAsync((string?)null); return new AppSettingsViewModel(theme.Object, settings.Object); }
     private static ClientListViewModel MakeVm(List<Client> clients)
     {
         var repo = new Mock<IClientRepository>();
-        repo.Setup(r => r.GetAllAsync()).ReturnsAsync(clients);
+        repo.Setup(r => r.GetAllAsync(It.IsAny<bool>())).ReturnsAsync(clients);
         var workEntryMock = new Mock<IWorkEntryRepository>();
         workEntryMock.Setup(r => r.GetUninvoicedHoursByClientAsync()).ReturnsAsync(new Dictionary<int, decimal>());
-        return new ClientListViewModel(repo.Object, workEntryMock.Object, new Mock<IDialogService>().Object);
+        return new ClientListViewModel(repo.Object, workEntryMock.Object, new Mock<IDialogService>().Object, MakeAppSettings());
     }
 
     [Fact]

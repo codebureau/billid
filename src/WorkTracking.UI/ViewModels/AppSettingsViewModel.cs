@@ -10,8 +10,11 @@ public class AppSettingsViewModel(
     ISettingRepository settingRepository) : ViewModelBase
 {
     private const string ThemeSettingKey = "ui_theme";
+    private const string ShowDeactivatedClientsKey = "show_deactivated_clients";
 
     private AppTheme _selectedTheme = themeService.CurrentTheme;
+    private bool _showDeactivatedClients;
+
     public AppTheme SelectedTheme
     {
         get => _selectedTheme;
@@ -20,6 +23,12 @@ public class AppSettingsViewModel(
             if (SetField(ref _selectedTheme, value))
                 PreviewTheme(value);
         }
+    }
+
+    public bool ShowDeactivatedClients
+    {
+        get => _showDeactivatedClients;
+        set => SetField(ref _showDeactivatedClients, value);
     }
 
     public IReadOnlyList<AppTheme> AvailableThemes { get; } = [AppTheme.Light, AppTheme.Dark];
@@ -34,7 +43,11 @@ public class AppSettingsViewModel(
         else
             _selectedTheme = AppTheme.Light;
 
+        var showDeactivated = await settingRepository.GetAsync(ShowDeactivatedClientsKey);
+        _showDeactivatedClients = showDeactivated == "true";
+
         OnPropertyChanged(nameof(SelectedTheme));
+        OnPropertyChanged(nameof(ShowDeactivatedClients));
         themeService.Apply(_selectedTheme);
     }
 
@@ -44,5 +57,6 @@ public class AppSettingsViewModel(
     {
         themeService.Apply(_selectedTheme);
         await settingRepository.SetAsync(ThemeSettingKey, _selectedTheme.ToString());
+        await settingRepository.SetAsync(ShowDeactivatedClientsKey, _showDeactivatedClients ? "true" : "false");
     }
 }
