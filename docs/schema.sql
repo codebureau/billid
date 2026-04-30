@@ -1,4 +1,4 @@
--- SQLite schema for billid / WorkTracking
+-- SQLite schema for barebill / WorkTracking
 
 PRAGMA foreign_keys = ON;
 

@@ -38,7 +38,7 @@
             </Border>
             <!-- About button pinned to the bottom -->
             <Button DockPanel.Dock="Bottom"
-                    Content="About billid"
+                    Content="About barebill"
                     Command="{Binding ShowAboutCommand}"
                     Style="{StaticResource SecondaryButton}"
                     Margin="8,4,8,8" FontSize="11"/>

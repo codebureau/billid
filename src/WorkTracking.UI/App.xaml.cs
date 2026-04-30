@@ -26,7 +26,7 @@ public partial class App : Application
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.File(
-                path: Path.Combine(logFolder, "billid-.log"),
+                path: Path.Combine(logFolder, "barebill-.log"),
                 rollingInterval: RollingInterval.Day,
                 retainedFileCountLimit: 30)
             .CreateLogger();
@@ -86,7 +86,7 @@ public partial class App : Application
 
             await vm.InitializeAsync();
 
-            Log.Information("billid started successfully");
+            Log.Information("barebill started successfully");
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        Log.Information("billid shutting down");
+        Log.Information("barebill shutting down");
         Log.CloseAndFlush();
         _serviceProvider?.Dispose();
         base.OnExit(e);
@@ -109,9 +109,9 @@ public partial class App : Application
     {
         var logFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "billid", "logs");
+            "barebill", "logs");
         MessageBox.Show(
-            $"An unexpected error occurred and billid needs to close.\n\n" +
+            $"An unexpected error occurred and barebill needs to close.\n\n" +
             $"{ex?.Message}\n\n" +
             $"A log file has been written to:\n{logFolder}",
             "Unexpected Error",

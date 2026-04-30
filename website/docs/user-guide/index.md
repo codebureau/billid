@@ -1,6 +1,6 @@
 # User Guide
 
-billid is organised around **clients**. Each client has their own timesheet, invoice history, summary, and settings.
+barebill is organised around **clients**. Each client has their own timesheet, invoice history, summary, and settings.
 
 ## Navigation
 

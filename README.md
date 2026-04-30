@@ -1,11 +1,11 @@
-# billid
+# barebill
 
 **Local-first time tracking and invoicing for solo consultants.**
 
-billid is a Windows desktop application that helps independent consultants track their time, manage clients, and prepare invoices — entirely offline, with no subscription and no cloud dependency.
+barebill is a Windows desktop application that helps independent consultants track their time, manage clients, and prepare invoices — entirely offline, with no subscription and no cloud dependency.
 
-[![Build](https://github.com/codebureau/billid/actions/workflows/build.yml/badge.svg)](https://github.com/codebureau/billid/actions/workflows/build.yml)
-[![Docs](https://github.com/codebureau/billid/actions/workflows/docs.yml/badge.svg)](https://codebureau.github.io/billid)
+[![Build](https://github.com/codebureau/barebill/actions/workflows/build.yml/badge.svg)](https://github.com/codebureau/barebill/actions/workflows/build.yml)
+[![Docs](https://github.com/codebureau/barebill/actions/workflows/docs.yml/badge.svg)](https://codebureau.github.io/barebill)
 
 ---
 
@@ -19,12 +19,12 @@ billid is a Windows desktop application that helps independent consultants track
 
 ## Documentation
 
-Full documentation is at **[codebureau.github.io/billid](https://codebureau.github.io/billid)**.
+Full documentation is at **[codebureau.github.io/barebill](https://codebureau.github.io/barebill)**.
 
-- [Getting started](https://codebureau.github.io/billid/getting-started/)
-- [User guide](https://codebureau.github.io/billid/user-guide/)
-- [Architecture](https://codebureau.github.io/billid/developer/architecture/)
-- [Contributing](https://codebureau.github.io/billid/developer/contributing/)
+- [Getting started](https://codebureau.github.io/barebill/getting-started/)
+- [User guide](https://codebureau.github.io/barebill/user-guide/)
+- [Architecture](https://codebureau.github.io/barebill/developer/architecture/)
+- [Contributing](https://codebureau.github.io/barebill/developer/contributing/)
 
 ## Quick start (from source)
 
@@ -36,8 +36,8 @@ Full documentation is at **[codebureau.github.io/billid](https://codebureau.gith
 ### Build and run
 
 ```powershell
-git clone https://github.com/codebureau/billid
-cd billid
+git clone https://github.com/codebureau/barebill
+cd barebill
 dotnet run --project src/WorkTracking.UI
 ```
 
@@ -58,7 +58,7 @@ dotnet test src/WorkTracking.slnx
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://codebureau.github.io/billid/developer/contributing/) for the branch/PR workflow, coding conventions, and how to run tests.
+See [CONTRIBUTING.md](https://codebureau.github.io/barebill/developer/contributing/) for the branch/PR workflow, coding conventions, and how to run tests.
 
 ## Licence
 

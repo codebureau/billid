@@ -1,6 +1,6 @@
 # Exporting Data
 
-billid can export your work entries — along with basic client information — to a **CSV file** that can be opened in Excel, Google Sheets, or any compatible tool.
+barebill can export your work entries — along with basic client information — to a **CSV file** that can be opened in Excel, Google Sheets, or any compatible tool.
 
 ---
 

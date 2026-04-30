@@ -7,17 +7,17 @@ Releases are driven entirely by **Git tags** — there are no version numbers in
 ## How it works
 
 1. A tag (e.g. `v1.2.0`) is pushed to `main`
-2. The [`release.yml`](https://github.com/codebureau/billid/blob/main/.github/workflows/release.yml) workflow triggers
-3. Tests run; if they pass, a self-contained `billid.exe` is published for `win-x64`
+2. The [`release.yml`](https://github.com/codebureau/barebill/blob/main/.github/workflows/release.yml) workflow triggers
+3. Tests run; if they pass, a self-contained `barebill.exe` is published for `win-x64`
 4. A **GitHub Release** is created with the `.exe` attached and release notes auto-generated from merged PR titles
 
-The binary has the tag version stamped into it (visible in **About billid**) — no manual `.csproj` edits needed.
+The binary has the tag version stamped into it (visible in **About barebill**) — no manual `.csproj` edits needed.
 
 ---
 
 ## Versioning scheme
 
-billid uses [Semantic Versioning](https://semver.org/):
+barebill uses [Semantic Versioning](https://semver.org/):
 
 | Increment | When to use |
 |-----------|-------------|
@@ -62,8 +62,8 @@ That's it — the release workflow handles everything else.
 
 ### 4. Verify the release
 
-- Go to [Actions](https://github.com/codebureau/billid/actions) and confirm the **Release** workflow passes
-- Go to [Releases](https://github.com/codebureau/billid/releases) and check that `billid.exe` is attached and the release notes look correct
+- Go to [Actions](https://github.com/codebureau/barebill/actions) and confirm the **Release** workflow passes
+- Go to [Releases](https://github.com/codebureau/barebill/releases) and check that `barebill.exe` is attached and the release notes look correct
 
 ---
 

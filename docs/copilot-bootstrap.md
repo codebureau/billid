@@ -1,6 +1,6 @@
-# Copilot Bootstrap – billid / WorkTracking
+# Copilot Bootstrap – barebill / WorkTracking
 
-You are helping build a WPF (.NET 8) desktop application called **billid**.
+You are helping build a WPF (.NET 8) desktop application called **barebill**.
 
 Internal architecture is brand-agnostic and uses the namespace prefix **WorkTracking**.
 
