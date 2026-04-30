@@ -1,6 +1,6 @@
 # Architecture
 
-billid is a local-first WPF desktop application built on .NET 10, using MVVM and SQLite.
+barebill is a local-first WPF desktop application built on .NET 10, using MVVM and SQLite.
 
 ---
 
@@ -48,7 +48,7 @@ All database access goes through repository interfaces. No raw SQL exists outsid
 
 Schema is applied at startup via `SchemaInitializer` (idempotent). Migrations live in `WorkTracking.Data/Migrations/` as numbered SQL files.
 
-Data is stored at `%APPDATA%\billid\billid.db`.
+Data is stored at `%APPDATA%\barebill\barebill.db`.
 
 ---
 
@@ -73,8 +73,8 @@ Registrations are in `WorkTracking.UI/DependencyInjection/ServiceCollectionExten
 ### Build and run
 
 ```powershell
-git clone https://github.com/codebureau/billid
-cd billid
+git clone https://github.com/codebureau/barebill
+cd barebill
 dotnet build src/WorkTracking.slnx
 dotnet run --project src/WorkTracking.UI
 ```

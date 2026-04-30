@@ -17,9 +17,9 @@ public class MainWindowViewModel(
     public AppSettingsViewModel  AppSettings  { get; } = appSettingsViewModel;
 
 #if DEBUG
-    public string Title => "billid [DEV]";
+    public string Title => "barebill [DEV]";
 #else
-    public string Title => "billid";
+    public string Title => "barebill";
 #endif
 
     private bool _showSettings;
@@ -31,7 +31,7 @@ public class MainWindowViewModel(
     public event EventHandler? ShowAboutRequested;
 
     public ICommand ShowAboutCommand  => new RelayCommand(_ => ShowAboutRequested?.Invoke(this, EventArgs.Empty));
-    public ICommand OpenHelpCommand   => new RelayCommand(_ => Process.Start(new ProcessStartInfo("https://codebureau.github.io/billid/") { UseShellExecute = true }));
+    public ICommand OpenHelpCommand   => new RelayCommand(_ => Process.Start(new ProcessStartInfo("https://codebureau.github.io/barebill/") { UseShellExecute = true }));
     public ICommand GoHomeCommand     => new RelayCommand(_ => NavigateHome());
     public ICommand GoSettingsCommand => new RelayCommand(_ => NavigateSettings());
 

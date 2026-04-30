@@ -2,10 +2,10 @@
 
 ## Installation
 
-1. Go to the [Releases page](https://github.com/codebureau/billid/releases)
-2. Download `billid-win-Setup.exe` from the latest release
-3. Run the installer — it will install billid and create a Start Menu shortcut
-4. Launch billid from the Start Menu
+1. Go to the [Releases page](https://github.com/codebureau/barebill/releases)
+2. Download `barebill-win-Setup.exe` from the latest release
+3. Run the installer — it will install barebill and create a Start Menu shortcut
+4. Launch barebill from the Start Menu
 
 No .NET prerequisite — everything is bundled inside the installer.
 
@@ -22,24 +22,24 @@ No .NET prerequisite — everything is bundled inside the installer.
 
 ## Verifying your download
 
-Each release includes a `SHA256SUMS.txt` file on the [Releases page](https://github.com/codebureau/billid/releases). Use it to confirm your download hasn't been tampered with.
+Each release includes a `SHA256SUMS.txt` file on the [Releases page](https://github.com/codebureau/barebill/releases). Use it to confirm your download hasn't been tampered with.
 
 Open PowerShell in the folder where you saved the installer and run:
 
 ```powershell
-(Get-FileHash .\billid-win-Setup.exe -Algorithm SHA256).Hash.ToLower()
+(Get-FileHash .\barebill-win-Setup.exe -Algorithm SHA256).Hash.ToLower()
 ```
 
-Compare the output against the hash listed for `billid-win-Setup.exe` in `SHA256SUMS.txt`. They must match exactly.
+Compare the output against the hash listed for `barebill-win-Setup.exe` in `SHA256SUMS.txt`. They must match exactly.
 
 ---
 
 ## First launch
 
-On first launch, billid creates its database at:
+On first launch, barebill creates its database at:
 
 ```
-%APPDATA%\billid\billid.db
+%APPDATA%\barebill\barebill.db
 ```
 
 No setup is required -- the schema is initialised automatically.
@@ -88,8 +88,8 @@ No setup is required -- the schema is initialised automatically.
 If you prefer to build from source:
 
 ```powershell
-git clone https://github.com/codebureau/billid
-cd billid
+git clone https://github.com/codebureau/barebill
+cd barebill
 dotnet build src/WorkTracking.slnx
 dotnet run --project src/WorkTracking.UI
 ```

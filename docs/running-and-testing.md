@@ -1,4 +1,4 @@
-# Running and Testing – billid / WorkTracking
+# Running and Testing – barebill / WorkTracking
 
 This file is updated at the end of every phase and always reflects the **current state** of the app: what you can run, what you can test, and how.
 
@@ -17,8 +17,8 @@ This file is updated at the end of every phase and always reflects the **current
 
 ```powershell
 # Clone (if not already)
-git clone https://github.com/codebureau/billid
-cd billid
+git clone https://github.com/codebureau/barebill
+cd barebill
 
 # Open in Visual Studio
 start src\WorkTracking.slnx
@@ -34,7 +34,7 @@ Or open `src\WorkTracking.slnx` directly from Visual Studio.
 
 The app is now fully usable without any raw SQL setup. On launch:
 
-1. Schema initializer creates/updates `%APPDATA%\billid\billid.db`.
+1. Schema initializer creates/updates `%APPDATA%\barebill\barebill.db`.
 2. Main window opens — click **+ Add** in the client list to create your first client.
 3. Select a client to activate all four tabs:
    - **Timesheet** — use **+ Add entry** to log work; select a row to **? Edit** or **?? Delete** it; select uninvoiced entries and click **Prepare Invoice**.
@@ -57,7 +57,7 @@ dotnet run
 
 ### What you will see
 
-- Window titled **billid**, 1100x650 px.
+- Window titled **barebill**, 1100x650 px.
 - On first run the client list is empty — click **+ Add** to create a client.
 - All data entry flows through dialogs — no raw SQL required.
 
