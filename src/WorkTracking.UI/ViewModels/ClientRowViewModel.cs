@@ -9,6 +9,7 @@ public class ClientRowViewModel(Client client, decimal uninvoicedHours)
     public Client Client => client;
     public string Name => client.Name;
     public string? CompanyName => client.CompanyName;
+    public bool IsActive => client.IsActive;
 
     public bool IsCapExceeded =>
         InvoiceCapCalculator.Calculate(

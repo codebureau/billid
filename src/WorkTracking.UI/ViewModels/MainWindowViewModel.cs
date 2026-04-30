@@ -53,6 +53,21 @@ public class MainWindowViewModel(
             await Home.LoadAsync();
             ClientList.SelectedClient = updatedClient;
         };
+
+        ClientDetail.Settings.ClientDeleted += async (_, _) =>
+        {
+            ClientList.SelectedClient = null;
+            ClientDetail.Clear();
+            await ClientList.LoadAsync();
+            await Home.LoadAsync();
+            NotifyPanelState();
+        };
+
+        AppSettings.PropertyChanged += async (_, e) =>
+        {
+            if (e.PropertyName == nameof(AppSettingsViewModel.ShowDeactivatedClients))
+                await ClientList.LoadAsync();
+        };
     }
 
     private void NavigateHome()

@@ -13,10 +13,10 @@ public class MainWindowViewModelTests
     private static ClientListViewModel MakeClientListVm(List<Client>? clients = null)
     {
         var mock = new Mock<IClientRepository>();
-        mock.Setup(r => r.GetAllAsync()).ReturnsAsync(clients ?? []);
+        mock.Setup(r => r.GetAllAsync(It.IsAny<bool>())).ReturnsAsync(clients ?? []);
         var workEntryMock = new Mock<IWorkEntryRepository>();
         workEntryMock.Setup(r => r.GetUninvoicedHoursByClientAsync()).ReturnsAsync(new Dictionary<int, decimal>());
-        return new ClientListViewModel(mock.Object, workEntryMock.Object, new Mock<IDialogService>().Object);
+        return new ClientListViewModel(mock.Object, workEntryMock.Object, new Mock<IDialogService>().Object, MakeAppSettingsVm());
     }
 
     private static TimesheetViewModel MakeTimesheetVm()
@@ -72,7 +72,7 @@ public class MainWindowViewModelTests
     private static HomeViewModel MakeHomeVm()
     {
         var clientRepo = new Mock<IClientRepository>();
-        clientRepo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        clientRepo.Setup(r => r.GetAllAsync(It.IsAny<bool>())).ReturnsAsync([]);
         var entryRepo = new Mock<IWorkEntryRepository>();
         entryRepo.Setup(r => r.GetUninvoicedHoursByClientAsync()).ReturnsAsync(new Dictionary<int, decimal>());
         var invoiceRepo = new Mock<IInvoiceRepository>();

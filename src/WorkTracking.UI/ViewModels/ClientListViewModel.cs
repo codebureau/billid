@@ -10,7 +10,8 @@ namespace WorkTracking.UI.ViewModels;
 public class ClientListViewModel(
     IClientRepository clientRepository,
     IWorkEntryRepository workEntryRepository,
-    IDialogService dialogService) : ViewModelBase
+    IDialogService dialogService,
+    AppSettingsViewModel appSettings) : ViewModelBase
 {
     private ObservableCollection<ClientRowViewModel> _clients = [];
     private ClientRowViewModel? _selectedRow;
@@ -58,6 +59,34 @@ public class ClientListViewModel(
 
     public ICommand LoadClientsCommand => new RelayCommand(async _ => await LoadAsync());
 
+    public ICommand ReorderCommand => new RelayCommand(
+        async param =>
+        {
+            if (param is not (int fromIndex, int toIndex)) return;
+            await MoveClientAsync(fromIndex, toIndex);
+        });
+
+    private async Task MoveClientAsync(int fromIndex, int toIndex)
+    {
+        if (fromIndex < 0 || toIndex < 0 || fromIndex >= Clients.Count || toIndex >= Clients.Count) return;
+
+        var item = Clients[fromIndex];
+        Clients.RemoveAt(fromIndex);
+        Clients.Insert(toIndex, item);
+        OnPropertyChanged(nameof(HasClients));
+
+        var movedClient = _allClients.FirstOrDefault(r => r.Client.Id == item.Client.Id);
+        if (movedClient is not null)
+        {
+            _allClients.Remove(movedClient);
+            var insertAt = toIndex < _allClients.Count ? toIndex : _allClients.Count;
+            _allClients.Insert(insertAt, movedClient);
+        }
+
+        var orderedIds = Clients.Select(r => r.Client.Id).ToList();
+        await clientRepository.ReorderAsync(orderedIds);
+    }
+
     public ICommand AddClientCommand => new RelayCommand(async _ =>
     {
         var vm = new AddClientViewModel();
@@ -90,7 +119,8 @@ public class ClientListViewModel(
 
     public async Task LoadAsync()
     {
-        var clients = await clientRepository.GetAllAsync();
+        var includeInactive = appSettings.ShowDeactivatedClients;
+        var clients = await clientRepository.GetAllAsync(includeInactive);
         var hoursByClient = await workEntryRepository.GetUninvoicedHoursByClientAsync();
 
         _allClients = clients

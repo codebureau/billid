@@ -10,6 +10,28 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24,20" MaxWidth="560">
 
+            <!-- Deactivated banner -->
+            <Border Background="{DynamicResource SurfaceAltBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12,8"
+                    Margin="0,0,0,16">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock Text="⚠ This client is deactivated. All settings are read-only."
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12"/>
+            </Border>
+
             <!-- Client details -->
             <TextBlock Text="Client Details" Style="{StaticResource SectionHeader}" Margin="0,0,0,14"/>
 
@@ -31,37 +53,39 @@
 
                 <!-- Name -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Name *" VerticalAlignment="Center" Margin="0,0,0,8"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Margin="0,0,0,8"/>
 
                 <!-- Contact name -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Contact name" VerticalAlignment="Center" Margin="0,0,0,8"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ContactName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ContactName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Margin="0,0,0,8"/>
 
                 <!-- Company name -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Company name" VerticalAlignment="Center" Margin="0,0,0,8"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding CompanyName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding CompanyName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Margin="0,0,0,8"/>
 
                 <!-- Address -->
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Address" VerticalAlignment="Top" Margin="0,4,0,8"/>
                 <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
                          AcceptsReturn="True" MinHeight="56" TextWrapping="Wrap"
+                         IsReadOnly="{Binding IsReadOnly}"
                          VerticalScrollBarVisibility="Auto" Margin="0,0,0,8"/>
 
                 <!-- ABN -->
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="ABN" VerticalAlignment="Center" Margin="0,0,0,8"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Abn, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Abn, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Margin="0,0,0,8"/>
 
                 <!-- Email -->
                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Email" VerticalAlignment="Center" Margin="0,0,0,8"/>
-                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Margin="0,0,0,8"/>
 
                 <!-- Phone -->
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Phone" VerticalAlignment="Center" Margin="0,0,0,8"/>
-                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Margin="0,0,0,8"/>
 
                 <!-- Hourly rate -->
                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Hourly rate *" VerticalAlignment="Center" Margin="0,0,0,8"/>
                 <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding HourlyRate, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:F2}'}"
+                         IsReadOnly="{Binding IsReadOnly}"
                          Margin="0,0,0,8"/>
             </Grid>
 
@@ -82,6 +106,7 @@
                 <!-- Cap amount -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Invoice cap ($)" VerticalAlignment="Center" Margin="0,0,0,8"/>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding InvoiceCapAmount, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                         IsReadOnly="{Binding IsReadOnly}"
                          Margin="0,0,0,8"/>
 
                 <!-- Cap behavior -->
@@ -89,11 +114,13 @@
                 <ComboBox Grid.Row="1" Grid.Column="1"
                           ItemsSource="{x:Static vm:ClientSettingsViewModel.CapBehaviorOptions}"
                           SelectedItem="{Binding InvoiceCapBehavior}"
+                          IsEnabled="{Binding IsActive}"
                           Margin="0,0,0,8"/>
 
                 <!-- Frequency -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Invoice every (days)" VerticalAlignment="Center" Margin="0,0,0,8"/>
                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding InvoiceFrequencyDays, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                         IsReadOnly="{Binding IsReadOnly}"
                          Margin="0,0,0,8"/>
             </Grid>
 
@@ -102,7 +129,7 @@
             <TextBlock Text="Only enabled categories appear in the timesheet filter and entry form."
                        Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,10"/>
 
-            <ItemsControl ItemsSource="{Binding Categories}">
+            <ItemsControl ItemsSource="{Binding Categories}" IsEnabled="{Binding IsActive}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:CategoryToggleViewModel}">
                         <CheckBox Content="{Binding Name}"
@@ -112,8 +139,9 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- Add new category -->
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+            <!-- Add new category (active clients only) -->
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                        Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
                 <TextBox Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}"
                          Width="180" Padding="4,3" Margin="0,0,6,0"
                          ToolTip="New category name"/>
@@ -123,8 +151,9 @@
                         Padding="10,5"/>
             </StackPanel>
 
-            <!-- Save -->
-            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+            <!-- Save / Deactivate (active clients) -->
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0"
+                        Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Button Content="Save changes"
                         Command="{Binding SaveCommand}"
                         Style="{StaticResource PrimaryButton}"
@@ -141,6 +170,25 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
+                <Button Content="Deactivate client"
+                        Command="{Binding DeactivateCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Foreground="{DynamicResource DangerBrush}"
+                        Padding="14,6" Margin="16,0,0,0"/>
+            </StackPanel>
+
+            <!-- Reactivate / Delete (inactive clients) -->
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0"
+                        Visibility="{Binding IsReadOnly, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Button Content="Reactivate client"
+                        Command="{Binding ReactivateCommand}"
+                        Style="{StaticResource PrimaryButton}"
+                        Padding="14,6" Margin="0,0,10,0"/>
+                <Button Content="Delete client"
+                        Command="{Binding DeleteClientCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Foreground="{DynamicResource DangerBrush}"
+                        Padding="14,6"/>
             </StackPanel>
 
         </StackPanel>

@@ -9,13 +9,15 @@ namespace WorkTracking.Data.Repositories;
 
 public class ClientRepository(IDatabaseConnectionFactory connectionFactory, ILogger<ClientRepository> logger) : IClientRepository
 {
-    public async Task<IReadOnlyList<Client>> GetAllAsync()
+    public async Task<IReadOnlyList<Client>> GetAllAsync(bool includeInactive = false)
     {
         await using var connection = connectionFactory.CreateConnection();
         await connection.OpenAsync();
 
         await using var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM client ORDER BY name";
+        command.CommandText = includeInactive
+            ? "SELECT * FROM client ORDER BY sort_order, name"
+            : "SELECT * FROM client WHERE is_active = 1 ORDER BY sort_order, name";
 
         var clients = new List<Client>();
         await using var reader = await command.ExecuteReaderAsync();
@@ -47,10 +49,10 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory, ILog
         command.CommandText = """
             INSERT INTO client (name, contact_name, company_name, address, abn, email, phone,
                 hourly_rate, invoice_cap_amount, invoice_cap_behavior, invoice_frequency_days,
-                last_invoice_date, next_invoice_due_date, created_at, updated_at)
+                last_invoice_date, next_invoice_due_date, is_active, sort_order, created_at, updated_at)
             VALUES ($name, $contactName, $companyName, $address, $abn, $email, $phone,
                 $hourlyRate, $invoiceCapAmount, $invoiceCapBehavior, $invoiceFrequencyDays,
-                $lastInvoiceDate, $nextInvoiceDueDate, $createdAt, $updatedAt);
+                $lastInvoiceDate, $nextInvoiceDueDate, $isActive, $sortOrder, $createdAt, $updatedAt);
             SELECT last_insert_rowid();
             """;
         BindClientParameters(command, client);
@@ -75,6 +77,8 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory, ILog
                 invoice_frequency_days = $invoiceFrequencyDays,
                 last_invoice_date = $lastInvoiceDate,
                 next_invoice_due_date = $nextInvoiceDueDate,
+                is_active = $isActive,
+                sort_order = $sortOrder,
                 updated_at = $updatedAt
             WHERE id = $id
             """;
@@ -83,6 +87,41 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory, ILog
 
         await command.ExecuteNonQueryAsync();
         logger.LogInformation("Updated client {ClientId} '{Name}'", client.Id, client.Name);
+    }
+
+    public async Task SetActiveAsync(int id, bool active)
+    {
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "UPDATE client SET is_active = $isActive, updated_at = $updatedAt WHERE id = $id";
+        command.Parameters.AddWithValue("$isActive", active ? 1 : 0);
+        command.Parameters.AddWithValue("$updatedAt", DateConversion.ToIso8601(DateTime.UtcNow));
+        command.Parameters.AddWithValue("$id", id);
+
+        await command.ExecuteNonQueryAsync();
+        logger.LogInformation("{Action} client {ClientId}", active ? "Reactivated" : "Deactivated", id);
+    }
+
+    public async Task ReorderAsync(IReadOnlyList<int> orderedIds)
+    {
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        for (var i = 0; i < orderedIds.Count; i++)
+        {
+            await using var command = connection.CreateCommand();
+            command.Transaction = (Microsoft.Data.Sqlite.SqliteTransaction)transaction;
+            command.CommandText = "UPDATE client SET sort_order = $sortOrder WHERE id = $id";
+            command.Parameters.AddWithValue("$sortOrder", i);
+            command.Parameters.AddWithValue("$id", orderedIds[i]);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        await transaction.CommitAsync();
+        logger.LogInformation("Reordered {Count} clients", orderedIds.Count);
     }
 
     public async Task DeleteAsync(int id)
@@ -118,6 +157,8 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory, ILog
             (object?)DateConversion.ToIso8601Nullable(client.LastInvoiceDate) ?? DBNull.Value);
         command.Parameters.AddWithValue("$nextInvoiceDueDate",
             (object?)DateConversion.ToIso8601Nullable(client.NextInvoiceDueDate) ?? DBNull.Value);
+        command.Parameters.AddWithValue("$isActive", client.IsActive ? 1 : 0);
+        command.Parameters.AddWithValue("$sortOrder", client.SortOrder);
         command.Parameters.AddWithValue("$createdAt", now);
         command.Parameters.AddWithValue("$updatedAt", now);
     }
@@ -138,6 +179,8 @@ public class ClientRepository(IDatabaseConnectionFactory connectionFactory, ILog
         InvoiceFrequencyDays = reader.IsDBNull(reader.GetOrdinal("invoice_frequency_days")) ? null : reader.GetInt32(reader.GetOrdinal("invoice_frequency_days")),
         LastInvoiceDate = reader.IsDBNull(reader.GetOrdinal("last_invoice_date")) ? null : DateConversion.ToDateOnly(reader.GetString(reader.GetOrdinal("last_invoice_date"))),
         NextInvoiceDueDate = reader.IsDBNull(reader.GetOrdinal("next_invoice_due_date")) ? null : DateConversion.ToDateOnly(reader.GetString(reader.GetOrdinal("next_invoice_due_date"))),
+        IsActive = reader.GetInt32(reader.GetOrdinal("is_active")) == 1,
+        SortOrder = reader.GetInt32(reader.GetOrdinal("sort_order")),
         CreatedAt = DateConversion.ToDateTime(reader.GetString(reader.GetOrdinal("created_at"))),
         UpdatedAt = DateConversion.ToDateTime(reader.GetString(reader.GetOrdinal("updated_at"))),
     };
